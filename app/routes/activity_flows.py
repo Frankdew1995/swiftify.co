@@ -57,8 +57,8 @@ import pusher
 
 pusher_client = pusher.Pusher(
     app_id='1182915',
-    key='2da9c9700dd0922bfaa1',
-    secret='9903a6e4f63bdb94856f',
+    key='x',
+    secret='x',
     cluster='eu',
     ssl=True
 )

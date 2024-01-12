@@ -1,0 +1,197 @@
+{% extends "suppliers/base.html" %}
+
+
+{% block css %}
+
+
+<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css"> -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+
+
+
+{% endblock %}
+
+
+
+<!-- Topbar Search -->
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">Purchase Orders</h1>
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+    <!-- render flashing messages -->
+    {% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+      {% for message in messages %}
+
+      <div class="alert alert-success text-center" role="alert">
+          {{ message }}
+      </div>
+
+      {% endfor %}
+
+    {% endif %}
+
+    {% endwith %}
+
+
+<div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+          <a href=# class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-cart-plus"></i>
+            New Product
+          </a>
+
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm dropdown-toggle" data-toggle="dropdown">
+            <i class="fas fa-cogs"></i>
+            Tools
+          </a>
+          <div class="dropdown-menu">
+
+            <a class="dropdown-item update-price-btn" href="#" id="view-">
+              <i class="fas fa-eye"></i>
+              View
+            </a>
+
+            <a class="dropdown-item update-price-btn" href="#" id="edit-">
+              <i class="fas fa-edit"></i>
+              Edit
+            </a>
+
+
+            <a class="dropdown-item" href="#" id="delete-">
+              <i class="far fa-trash-alt"></i>
+              Delete
+            </a>
+
+          </div>
+
+
+        </div>
+
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+                <div class="row">
+                  <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                    <thead>
+                      <tr role="row">
+                        <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                          ID
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Barcode
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Item Name
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 31px;">
+                          Brand
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">
+                          Category
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" style="width: 67px;">
+                          Price €
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" style="width: 67px;">
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+
+                  <tbody>
+
+                  <!-- loop over the products -->
+
+                  {% for item in products %}
+
+                  <tr role="row" class="odd">
+                      <td class="sorting_1">{{ item.id }}</td>
+                      <td>{{ item.gtin }}</td>
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.brand }}</td>
+                      <td>{{ item.category }}</td>
+                      <td>{{ price }}</td>
+                      <td>
+
+                          <a href="#" class="btn btn-primary dropdown-toggle" data-target="dropdown-menu">Action</a>
+                          <div class="dropdown-menu">
+
+                            <a class="dropdown-item" href="#" id="view-">
+                              <i class="fas fa-eye"></i>
+                              View
+                            </a>
+
+                            <a class="dropdown-item update-price-btn" href="#" id="edit-">
+                              <i class="fas fa-edit"></i>
+                              Edit
+                            </a>
+
+
+                            <a class="dropdown-item" href="#" id="delete-">
+                              <i class="far fa-trash-alt"></i>
+                              Delete
+                            </a>
+
+                          </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- end for loop -->
+
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+
+<!-- Page level plugins -->
+<script src={{ url_for('static', filename="vendor/datatables/jquery.dataTables.min.js") }} charset="utf-8"></script>
+
+
+<script src={{ url_for('static', filename="vendor/datatables/dataTables.bootstrap4.min.js") }} charset="utf-8"></script>
+
+
+<!-- Page level custom scripts  activate the datatable functionality -->
+<script src={{ url_for('static', filename="js/demo/datatables-demo.js") }}></script>
+
+
+
+{% endblock %}

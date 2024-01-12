@@ -1,0 +1,149 @@
+{% extends "users/base.html" %}
+
+
+{% block css %}
+
+
+<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css"> -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+
+
+{% endblock %}
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">Rejected quotes</h1>
+
+
+{% endblock %}
+
+
+
+{% block content %}
+<div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export</a>
+        </div>
+
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+
+                <div class="row">
+                  <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                    <thead>
+                      <tr role="row">
+                        <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                          ID
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Dated
+                        </th>
+
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Expiry
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Owner
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Items
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Lead Time
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Status
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">
+                          Action
+                        </th>
+
+                      </tr>
+                    </thead>
+
+                  <tbody>
+
+                  {% for quote in quotes %}
+                  <tr role="row" class="odd">
+                      <td class="sorting_1">{{ quote.id }}</td>
+                      <td>{{quote.timeCreated}}</td>
+
+                      <td>{{ quote.valid_until }}</td>
+                      <td>{{ quote.buyer }}</td>
+
+                      <td>{{ quotes2items.get(quote.id) }}</td>
+                      <td>{{ quote.lead_time }} working day(s)</td>
+
+                      <td>
+                        <span class="badge badge-{{ status_class }}">
+                          {{ status }}
+                        </span>
+                      </td>
+
+                      <td>
+                        <a href={{ url_for('view_quote', quote_id=quote.id) }} class="btn btn-primary">view</a>
+                      </td>
+
+
+                    </tr>
+                    {% endfor %}
+
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script type="text/javascript">
+    // sorting the dated column in descending order
+    $(document).ready(function() {
+      $('#dataTable').DataTable({
+        'order':[[1, "desc"]]
+      });
+    } );
+</script>
+
+
+<!-- Page level plugins -->
+<script src={{ url_for('static', filename="vendor/datatables/jquery.dataTables.min.js") }} charset="utf-8"></script>
+
+
+<script src={{ url_for('static', filename="vendor/datatables/dataTables.bootstrap4.min.js") }} charset="utf-8"></script>
+
+
+<!-- Page level custom scripts  activate the datatable functionality -->
+<script src={{ url_for('static', filename="js/demo/datatables-demo.js") }}></script>
+
+
+
+{% endblock %}

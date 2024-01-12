@@ -1,0 +1,47 @@
+{% extends "users/base.html" %}
+
+
+<!-- Topbar Search -->
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">Edit User {{ user.user_name }}</h1>
+
+
+{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="container-fluid">
+
+      <form class="form" method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.csrf_token }}
+
+        <div class="form-group">
+          {{ form.user_name.label }}
+          {{ form.user_name(class="form-control", value=user.user_name) }}
+        </div>
+
+        <div class="form-group">
+          {{ form.email.label }}
+          {{ form.email(class="form-control", value=user.email, readonly=readonly) }}
+        </div>
+
+        <div class="form-group">
+          {{ form.role_id.label }}
+          {{ form.role_id(class="form-control", value=user.role.name) }}
+        </div>
+
+
+        <div class="form-label-group">
+            {{ form.update(class="btn btn-primary") }}
+        </div>
+
+      </form>
+
+    </div>
+
+{% endblock %}

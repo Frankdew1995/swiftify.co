@@ -1,0 +1,162 @@
+
+{% if current_user.role == "user" %}
+
+  {% extends "users/base.html" %}
+
+{% else %}
+
+  {% extends "vendors/base.html" %}
+
+{% endif %}
+
+<!-- custom css for this page -->
+{% block css %}
+
+  <style media="screen">
+
+
+
+
+  </style>
+
+
+{% endblock %}
+
+
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">{{ title }}</h1>
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <!-- display unread messages -->
+    {% for msg in unread %}
+
+    <a class="dropdown-item d-flex align-items-center view-msg" href="#" href="#" data-toggle="modal" data-target="#message{{ msg.id }}">
+      <div class="mr-3">
+        <div class="icon-circle bg-primary">
+          <i class="fas fa-file-alt text-white"></i>
+        </div>
+      </div>
+      <div>
+        <div class="small text-gray-500">{{ msg.timeCreated }}</div>
+        <span class="font-weight-bold">{{ msg.content[:75] }}......</span>
+      </div>
+    </a>
+
+    {% endfor %}
+    <!-- end of unread messages -->
+
+
+
+
+    <!-- read messages -->
+
+    {% for msg in read %}
+
+    <a class="dropdown-item d-flex align-items-center view-msg" href="#" data-toggle="modal" data-target="#message{{ msg.id }}">
+      <div class="mr-3">
+        <div class="icon-circle bg-primary">
+          <i class="fas fa-file-alt text-white"></i>
+        </div>
+      </div>
+      <div>
+        <div class="small text-gray-500">{{ msg.timeCreated }}</div>
+        <span>{{ msg.content[:75] }}......</span>
+      </div>
+    </a>
+
+    {% endfor %}
+    <!-- end of read messages -->
+
+
+    <br>
+
+
+
+
+
+    <!-- start of message modals -->
+    {% for msg in messages %}
+
+    <div class="modal fade" id="message{{ msg.id }}" tabindex="-1" role="dialog" aria-labelledby="message{{ msg.id }}" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+
+
+                {{ msg.content }}
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                {% if not msg.isRead %}
+                <button type="button" class="btn btn-primary mark-read" data-message-id={{ msg.id }}>
+                  Mark as read
+                </button>
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+    </div>
+    {% endfor %}
+    <!-- end of messages modals -->
+
+
+
+  </div>
+  <!-- end of fluid -->
+
+  <br>
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+{% block scripts %}
+
+<!-- view messages js -->
+<script src={{ url_for('static', filename="js/view_messages.js") }} charset="utf-8"></script>
+
+
+{% endblock %}

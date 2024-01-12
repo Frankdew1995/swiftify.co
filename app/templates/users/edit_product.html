@@ -1,0 +1,364 @@
+
+
+<!-- custom css for this page -->
+{% block css %}
+
+<style media="screen">
+
+
+  #settingsForm{
+    width: 50%;
+  }
+
+
+  #suppliers-div {
+    display: none;
+  }
+
+
+
+</style>
+
+
+{% endblock %}
+{% extends "users/base.html" %}
+
+
+
+
+
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">{{ title }}</h1>
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <form class="form" method="POST" enctype="multipart/form-data" id="settingsForm">
+
+      {{ form.hidden_tag() }}
+
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-basic" role="tab" aria-controls="nav-home" aria-selected="true">
+            Basics
+          </a>
+
+          <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-others" role="tab" aria-controls="nav-profile" aria-selected="false">
+            Packing Data
+          </a>
+
+          <a class="nav-item nav-link" id="nav-3rd-tab" data-toggle="tab" href="#nav-customs-tax" role="tab" aria-controls="nav-3rd-tab" aria-selected="false">
+            Customs & Taxes
+          </a>
+
+          <a class="nav-item nav-link" id="nav-locations-tab" data-toggle="tab" href="#nav-locations" role="tab" aria-controls="nav-locations-tab" aria-selected="false">
+            Warehouses & Zones
+          </a>
+
+        </div>
+    </nav>
+
+
+    <div class="tab-content" id="nav-tabContent">
+
+          <div class="tab-pane fade show active" id="nav-basic" role="tabpanel" aria-labelledby="nav-home-tab">
+
+            <div class="form-label-group">
+              {{ form.name.label }}
+              {{ form.name(class="form-control") }}
+            </div>
+
+
+            <div class="form-label-group">
+
+                {{ form.gtin.label }}
+                {{ form.gtin(class="form-control") }}
+
+
+            </div>
+
+
+
+            <div class="form-label-group">
+              {{ form.colli_barcode.label }}
+              {{ form.colli_barcode(class="form-control") }}
+
+            </div>
+
+
+            <div class="form-label-group">
+              {{ form.desc.label }}
+              {{ form.desc(class="form-control", placeholder="Description of the product") }}
+            </div>
+
+
+            <div class="form-label-group">
+              {{ form.stock_quantity.label }}
+              {{ form.stock_quantity(class="form-control") }}
+            </div>
+
+
+
+            <div class="form-label-group">
+
+              {{ form.purchase_price.label }}
+              {{ form.purchase_price(class="form-control", placeholder="") }}
+
+            </div>
+
+            <div class="form-label-group">
+              <br>
+              Current Supplier(s)
+              <br>
+              <em>
+                <p>{{ current_supplier_s }}</p>
+              </em>
+
+            </div>
+
+
+
+            <div class="form-label-group" id="suppliers-div">
+
+              {{ form.suppliers.label }}
+              {{ form.suppliers(class="form-control", placeholder="", id="suppliers-field") }}
+
+            </div>
+
+            <br>
+            <button id="toggleSuppliersButton" type="button" class="btn btn-sm btn-secondary">Reset the Supplier(s)</button>
+
+
+            <hr>
+
+
+            <div class="form-label-group">
+
+                {{ form.image.label }}
+                {{ form.image(class="form-control-file", placeholder="") }}
+                <hr>
+                <p>
+                  {% if image %}
+                  <h6>Current Image:</h6>
+                  <img src={{ image }} alt="" class="product-image" style="max-width:50px max-length:50px">
+                  {% else %}
+                  <span>no photo abvailable</span>
+                  {% endif %}
+                </p>
+
+            </div>
+
+
+
+
+            <hr>
+
+
+
+          </div>
+
+          <div class="tab-pane fade" id="nav-others" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+
+            <div class="form-label-group">
+              {{ form.pu.label }}
+              {{ form.pu(class="form-control") }}
+            </div>
+
+
+
+            <div class="form-label-group">
+              {{ form.pu_gw.label }}
+              {{ form.pu_gw(class="form-control") }}
+            </div>
+
+
+            <div class="form-label-group">
+              {{ form.pu_length.label }}
+              {{ form.pu_length(class="form-control") }}
+            </div>
+
+
+            <div class="form-label-group">
+
+              {{ form.pu_width.label }}
+              {{ form.pu_width(class="form-control") }}
+            </div>
+
+
+            <div class="form-label-group">
+              {{ form.pu_height.label }}
+              {{ form.pu_height(class="form-control") }}
+            </div>
+
+
+
+            <!-- palletization data -->
+            <br>
+            <div class="form-label-group">
+              {{ form.palletized_quantity.label }}
+              {{ form.palletized_quantity(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.palletized_gw.label }}
+              {{ form.palletized_gw(class="form-control") }}
+            </div>
+
+
+            <div class="form-label-group">
+
+              {{ form.pallet_length.label }}
+              {{ form.pallet_length(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+
+              {{ form.pallet_width.label }}
+              {{ form.pallet_width(class="form-control") }}
+            </div>
+
+
+
+            <div class="form-label-group">
+              {{ form.pallet_height.label }}
+              {{ form.pallet_height(class="form-control") }}
+            </div>
+
+
+
+
+            <div class="form-label-group">
+              {{ form.palletized_quantity.label }}
+              {{ form.palletized_quantity(class="form-control") }}
+            </div>
+
+
+            <br>
+
+
+          </div>
+
+
+
+          <div class="tab-pane fade" id="nav-customs-tax" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+
+            <div class="form-label-group">
+              {{ form.hs_codes.label }}
+              {{ form.hs_codes(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.tax_rate.label }}
+              {{ form.tax_rate(class="form-control") }}
+            </div>
+
+
+            <div class="form-label-group">
+              {{ form.country.label }}
+              {{ form.country(class="form-control") }}
+            </div>
+
+            <br>
+
+
+          </div>
+
+
+          <!-- nav locations -->
+          <div class="tab-pane fade" id="nav-locations" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+
+            <div class="form-label-group">
+              {{ form.warehouses.label }}
+              {{ form.warehouses(class="form-control") }}
+            </div>
+
+
+          </div>
+
+
+
+
+
+
+
+    </div>
+
+
+    <br>
+
+    {{ form.update(class="btn btn-primary") }}
+
+
+    </form>
+
+
+
+
+  </div>
+
+  <br>
+
+
+
+  {% block scripts %}
+
+  <script>
+
+    document.getElementById('toggleSuppliersButton').addEventListener('click', function(e){
+      var supplierFieldDiv = document.getElementById('suppliers-div');
+      var supplierField = document.getElementById('suppliers-field');
+
+      if (supplierFieldDiv.style.display === "none") {
+          supplierFieldDiv.style.display = "block";
+          // Clear any selected options if the supplier field is visible
+          Array.from(supplierField.options).forEach(function(option) {
+            option.selected = false;
+          });
+      } else {
+          supplierFieldDiv.style.display = "none";
+      }
+
+      e.preventDefault();
+    });
+
+  </script>
+
+  {% endblock %}
+
+
+
+
+{% endblock %}

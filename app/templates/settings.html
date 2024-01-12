@@ -1,0 +1,411 @@
+{% extends "users/base.html" %}
+
+
+<!-- custom css for this page -->
+{% block css %}
+
+  <style media="screen">
+
+
+    #settingsForm{
+      width: 50%;
+    }
+
+    .tax-group-2{
+
+    }
+
+
+  </style>
+
+
+{% endblock %}
+
+
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">Company settings</h1>
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <form class="form" method="POST" enctype="multipart/form-data" id="settingsForm">
+
+      {{ form.hidden_tag() }}
+      {{ form.csrf_token }}
+
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+
+          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-home" aria-selected="true">
+            <i class="fa-solid fa-user-tie"></i>
+            Profile
+          </a>
+
+          <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab" href="#nav-basic" role="tab" aria-controls="nav-home" aria-selected="false">
+            <i class="fa-solid fa-building"></i>
+            Basic settings
+          </a>
+
+          <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-financial-tax" role="tab" aria-controls="nav-profile" aria-selected="false">
+            <i class="fa-solid fa-person-military-pointing"></i>
+            <i class="fa-solid fa-sack-dollar"></i>
+            Taxation, Financials and Customs
+          </a>
+
+
+          <a class="nav-item nav-link" id="nav-integration-tab" data-toggle="tab" href="#nav-integration-settings" role="tab" aria-controls="nav-profile" aria-selected="false">
+            <i class="fa-solid fa-link"></i>
+            Integrations
+          </a>
+
+          {% if current_user.role.name == 'admin' or current_user.is_admin %}
+            <a class="nav-item nav-link" id="nav-user-management-tab" data-toggle="tab" href="#nav-user-management" role="tab" aria-controls="nav-user-management" aria-selected="false">
+              <i class="fa-solid fa-users"></i>
+              User Management
+            </a>
+          {% endif %}
+
+        </div>
+    </nav>
+
+
+    <div class="tab-content" id="nav-tabContent">
+
+
+        <!-- first tab -->
+        <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+          <br>
+
+          <div class="form-label-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control", placeholder="") }}
+          </div>
+
+          <br>
+
+
+          <div class="form-label-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control", placeholder="", readonly=readonly) }}
+          </div>
+
+
+        </div>
+
+          <!-- second tab -->
+        <div class="tab-pane fade" id="nav-basic" role="tabpanel" aria-labelledby="nav-home-tab">
+
+          <br>
+
+          <div class="form-label-group">
+            {{ form.company_name.label }}
+            {{ form.company_name(class="form-control", placeholder="Enter your company name") }}
+          </div>
+
+
+
+          <div class="form-label-group">
+            {{ form.address.label }}
+            {{ form.address(class="form-control", placeholder="Enter your address") }}
+          </div>
+
+          <div class="form-label-group">
+            {{ form.city.label }}
+            {{ form.city(class="form-control", placeholder="Enter your city") }}
+          </div>
+
+          <div class="form-label-group">
+            {{ form.state_or_province.label }}
+            {{ form.state_or_province(class="form-control") }}
+          </div>
+
+          <div class="form-label-group">
+            {{ form.zip_code.label }}
+            {{ form.zip_code(class="form-control") }}
+          </div>
+
+          <div class="form-label-group">
+            {{ form.country.label }}
+            {{ form.country(class="form-control") }}
+          </div>
+
+          <hr>
+
+          <div class="form-label-group">
+            {{ form.logo.label }}
+            {{ form.logo(class="form-control-file", placeholder="") }}
+            <hr>
+            {% if logo %}
+            <img src={{ url_for('static', filename="img/tenant_logos/"+logo) }} alt="" height="50" width="50">
+            {% endif %}
+          </div>
+
+        </div>
+
+        <!-- third tab -->
+          <div class="tab-pane fade" id="nav-financial-tax" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+            <br>
+
+            <p>The following fields are optional and will appear on the invoices you issued to your customers</p>
+
+            <div class="form-label-group">
+              {{ form.tax_id.label }}
+              {{ form.tax_id(class="form-control", placeholder="") }}
+            </div>
+
+            <br>
+
+
+            <div class="form-label-group">
+              {{ form.eori.label }}
+              <a href="https://taxation-customs.ec.europa.eu/customs-4/customs-procedures-import-and-export-0/customs-procedures/economic-operators-registration-and-identification-number-eori_en", target="_blank">?</a>
+              {{ form.eori(class="form-control", placeholder="") }}
+            </div>
+
+
+            <div class="form-label-group">
+              {{ form.iban.label }}
+              {{ form.iban(class="form-control", placeholder="") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.swift_or_bic_no.label }}
+              {{ form.swift_or_bic_no(class="form-control", placeholder="") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.bank_name.label }}
+              {{ form. bank_name(class="form-control", placeholder="") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.bank_address.label }}
+              {{ form.bank_address(class="form-control", placeholder="") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.default_currency.label }}
+              {{ form.default_currency(class="form-control", placeholder="") }}
+            </div>
+
+
+
+
+
+            <br>
+
+            <h6>Tax Settings</h6>
+            <br>
+
+
+            <div class="tax-group-1">
+
+
+              <div class="form-label-group">
+                {{form.tax_rate1.label}}
+                {{ form.tax_rate1(class="form-control", id="taxRate1") }}
+              </div>
+
+            </div>
+
+
+            <div class="tax-group-2" id="tax-group-2">
+
+
+              <div class="form-label-group">
+                {{form.tax_rate2.label}}
+                {{ form.tax_rate2(class="form-control", id="taxRate2") }}
+              </div>
+
+            </div>
+
+            <br>
+
+
+
+
+
+          </div>
+
+
+
+
+          <!-- 4th tab -->
+          <div class="tab-pane fade" id="nav-integration-settings" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+            <br>
+
+            <p>
+
+              We support the integration with SalesBinder, the leading online inventory management system.
+
+            </p>
+
+            <div class="form-label-group">
+              {{ form.salesbinder_api_key.label }}
+              {{ form.salesbinder_api_key(class="form-control", placeholder="") }}
+            </div>
+
+            <br>
+
+
+            <div class="form-label-group">
+              {{ form.salesbinder_subdomain_name.label }}
+              {{ form.salesbinder_subdomain_name(class="form-control", placeholder="") }}
+            </div>
+
+
+
+
+          </div>
+
+
+          <!-- 5th tab       -->
+          <div class="tab-pane fade" id="nav-user-management" role="tabpanel" aria-labelledby="nav-user-management-tab">
+              <br>
+
+              <a href={{ url_for('add_user') }}>
+
+                <button type="button" name="add-user" class="btn btn-primary">
+                  <i class="fa-solid fa-user-plus"></i>
+                  add a user
+                </button>
+
+              </a>
+
+              <br>
+              <br>
+
+
+
+              <!-- User management table -->
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for user in users %}
+                    <tr>
+                      <td>{{ user.user_name }}</td>
+                      <td>{{ user.email }}</td>
+                      <td>{{ user.role.name}}</td>
+                      <td>
+                        <!-- Add links or buttons here for CRUD operations (Edit, Delete, etc.) -->
+                        <a href="#" class="btn btn-primary dropdown-toggle" data-target="dropdown-menu" data-toggle="dropdown">
+                          Action
+                        </a>
+
+                        <div class="dropdown-menu">
+
+                          <a class="dropdown-item" href={{ url_for('view_user', tenant_id=current_user.tenant_id, user_id=user.id) }} id="view-">
+                            <i class="fas fa-eye"></i>
+                            View
+                          </a>
+
+                        <!--an admin user cannot modify their own account  -->
+                        {% if current_user.id != user.id %}
+
+                          <a class="dropdown-item update-price-btn" href={{ url_for('edit_user', tenant_id=current_user.tenant_id, user_id=user.id) }}  id="edit-">
+                            <i class="fas fa-edit"></i>
+                            Edit
+                          </a>
+
+
+                          <!-- Add activate and deactivate options -->
+                          {% if user.activated %}
+                            <a class="dropdown-item" href="{{ url_for('deactivate_user', user_id=user.id, tenant_id=user.tenant_id) }}">
+                              <i class="fas fa-toggle-off"></i>
+                              Deactivate
+                            </a>
+                          {% else %}
+                            <a class="dropdown-item" href="{{ url_for('activate_user', user_id=user.id, tenant_id=user.tenant_id) }}">
+                              <i class="fas fa-toggle-on"></i>
+                              Activate
+                            </a>
+                          {% endif %}
+
+                        {% endif %}
+
+
+
+
+
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+
+
+
+            </div>
+
+
+    </div>
+
+
+    <br>
+
+    {{ form.submit(class="btn btn-primary") }}
+
+
+    </form>
+
+
+
+
+  </div>
+
+
+
+  {% block scripts %}
+
+
+  <script src={{ url_for('static', filename="js/company_settings.js") }}></script>
+
+
+
+
+  {% endblock %}
+
+
+{% endblock %}

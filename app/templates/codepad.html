@@ -1,0 +1,208 @@
+{% extends "suppliers/base.html" %}
+
+{% block css %}
+<style media="screen">
+  /* Add your custom CSS styles here */
+</style>
+{% endblock %}
+
+{% block topbar %}
+<h1 class="h3 mb-0 text-gray-800">Purchase Order Requisition {{ po.po_number }}</h1>
+{% endblock %}
+
+{% block content %}
+<!-- Render flashing messages -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success text-center" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm dropdown-toggle" data-toggle="dropdown">
+      <i class="fas fa-cogs"></i>
+      Tools
+    </a>
+    <div class="dropdown-menu">
+      <a class="dropdown-item update-price-btn" href="#" id="view-">
+        <i class="fas fa-eye"></i>
+        View
+      </a>
+      <a class="dropdown-item update-price-btn" href="{{ url_for("edit_po", po_uuid=po.uuid) }}" id="edit-">
+        <i class="fas fa-edit"></i>
+        Edit
+      </a>
+      <a class="dropdown-item" href="#" id="delete-">
+        <i class="far fa-trash-alt"></i>
+        Delete
+      </a>
+    </div>
+  </div>
+
+  <nav style="">
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link active" id="nav-overview-tab" data-toggle="tab" href="#nav-overview" role="tab" aria-controls="nav-home" aria-selected="true">
+        <i class="fa-regular fa-rectangle-list"></i> Overview
+      </a>
+      <a class="nav-item nav-link" id="nav-messages-tab" data-toggle="tab" href="#nav-messages" role="tab" aria-controls="nav-messages" aria-selected="false">
+        <i class="fa-regular fa-comments"></i> Messages
+      </a>
+      <a class="nav-item nav-link" id="nav-activity-tab" data-toggle="tab" href="#activity-stream" role="tab" aria-controls="nav-activity-tab" aria-selected="false">
+        <i class="fa-solid fa-faucet-drip"></i> Activity stream
+      </a>
+      <a class="nav-item nav-link" id="nav-documents-tab" data-toggle="tab" href="#nav-documents" role="tab" aria-controls="nav-3rd-tab" aria-selected="false">
+        <i class="fa-solid fa-folder-open"></i> Documents
+      </a>
+      <a class="nav-item nav-link" id="nav-locations-tab" data-toggle="tab" href="#nav-locations" role="tab" aria-controls="nav-locations-tab" aria-selected="false">
+        <i class="fa-solid fa-warehouse"></i> Warehouses &amp; Zones
+      </a>
+      <a class="nav-item nav-link" id="nav-changelog-tab" data-toggle="tab" href="#nav-changelog" role="tab" aria-controls="nav-changelog-tab" aria-selected="false">
+        <i class="fa-solid fa-history"></i> Change Log
+      </a>
+    </div>
+  </nav>
+
+  <div class="tab-content" id="nav-tabContent">
+    <br>
+
+    <!-- First tab - Overview -->
+    <div class="tab-pane fade show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table style="width: 100%; border: 0; margin: 6px 0 0 0; padding: 0;">
+              <tbody>
+                <tr style="border: 0;">
+                  <td style="">
+                    <p>
+                      <span style="font-weight: bold;">Supplier: </span>{{ po.supplier.name }}
+                    </p>
+                    <p></p>
+                    <p></p>
+                    <p>
+                      <span style="font-weight: bold;">PO #: </span>{{ po.po_number }}
+                    </p>
+                    <p>
+                      <span>Dated: </span><span style="font-weight: bold;" id="po-issue-date">{{ po.timeCreated }}</span>
+                    </p>
+                  </td>
+                  <td style="width: 10%"></td>
+                  <td>
+                    <p>
+                      <span style="font-weight: bold;">Bill to: </span>{{ tenant.company_name }}
+                    </p>
+                    <p>
+                      <span style="font-weight: bold;">Reference: </span>{{ po.reference if po.reference else ''}}
+                    </p>
+                    <p>
+                      <span style="font-weight: bold;">Receiving Warehouse: </span>{{ warehouse.warehouse_name }}
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <br>
+            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <form action="{{ url_for('submit_supplier_input', po_uuid=po.uuid) }}" method="POST">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                      <thead>
+                        <tr role="row">
+                          <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                            Item
+                          </th>
+                          <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                            Barcode
+                          </th>
+                          <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                            Quantity
+                          </th>
+                          <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                            Unit Price {{ currency }}
+                          </th>
+                          <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                            Tax Rate
+                          </th>
+                          <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                            Amount  {{ currency }}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for item in items %}
+                          <tr role="row" class="odd info-row">
+                            <td class="itemDescription sorting_1">
+                              {{ item.get("item_name") }}
+                            </td>
+                            <td class="gtinInput">
+                              {{ item.get("barcode") }}
+                            </td>
+                            <td class="qtyInput">
+                              <input type="number" name="quantity[]" value="{{ item.get("quantity", 0) }}">
+                            </td>
+                            <td class="priceInput">
+                              <input type="text" name="purchase_price[]" value="{{ item.get("purchase_price", 0) }}">
+                            </td>
+                            <td class="taxSelection">
+                              <input type="text" name="tax_rate[]" value="{{ item.get("tax_rate", 0) }}">
+                            </td>
+                            <td class="amount">
+                              {{ item.get("subtotal", 0) }}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                        <tr id="divisionTableRow" style="display:none"></tr>
+                      </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second tab - Messages -->
+    <div class="tab-pane fade" id="nav-messages" role="tabpanel" aria-labelledby="nav-messages-tab">
+      <!-- Messages code -->
+    </div>
+
+    <!-- Third tab - Activity stream -->
+    <div class="tab-pane fade show" id="activity-stream" role="tabpanel" aria-labelledby="nav-activity-tab">
+      <!-- Activity stream code -->
+    </div>
+
+    <!-- Fourth tab - Documents -->
+    <div class="tab-pane fade" id="nav-documents" role="tabpanel" aria-labelledby="nav-documents-tab">
+      <!-- Documents code -->
+    </div>
+
+    <!-- Fifth tab - Warehouses & Locations -->
+    <div class="tab-pane fade" id="nav-locations" role="tabpanel" aria-labelledby="nav-locations-tab">
+      <!-- Warehouses & Locations code -->
+    </div>
+
+    <!-- Sixth tab - Change Log -->
+    <div class="tab-pane fade" id="nav-changelog" role="tabpanel" aria-labelledby="nav-changelog-tab">
+      <!-- Change Log code -->
+    </div>
+  </div>
+</div>
+<br>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Add your JavaScript code here
+</script>
+{% endblock %}

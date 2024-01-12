@@ -1,0 +1,121 @@
+{% extends "users/base.html" %}
+
+
+<!-- custom css for this page -->
+{% block css %}
+
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/css/autoComplete.min.css"> -->
+
+  <style media="screen">
+
+
+    #settingsForm{
+      width: 50%;
+    }
+
+    .tax-group-2{
+      display:none;
+    }
+
+
+  </style>
+
+
+{% endblock %}
+
+
+
+{% block topbar %}
+
+
+  <h1 class="h3 mb-0 text-gray-800">Search</h1>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <form method="POST">
+      <div class="form-row">
+
+        <div class="col-12 col-md-9 mb-2 mb-md-0">
+          <input type="text" class="form-control form-control-md" name="search" id="search" placeholder="Search item no, barcode, brand name or a product">
+        </div>
+        <div class="col-12 col-md-3">
+          <button type="submit" class="btn btn-block btn-md btn-primary">Search</button>
+        </div>
+
+        <div id="match-list">
+
+
+          
+
+        </div>
+
+      </div>
+
+      <br>
+
+      <div class="form-row">
+
+        <p id="terms">Trending:
+          {% for term in common_searches %}
+
+          <a href={{ url_for("render_search_results", query=term) }} target="_blank">
+
+            <span>
+              #{{ term }}
+            </span>
+
+          </a>
+
+          {% endfor %}
+        </p>
+
+      </div>
+
+
+    </form>
+
+  </div>
+
+
+
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+
+<script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/js/autoComplete.min.js"></script>
+
+<script src={{ url_for('static', filename="js/search_autocomplete.js") }}></script>
+
+
+{% endblock %}

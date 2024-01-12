@@ -1,0 +1,261 @@
+{% extends "users/base.html" %}
+
+
+<!-- custom css for this page -->
+{% block css %}
+
+  <style media="screen">
+
+
+    #settingsForm{
+      width: 50%;
+    }
+
+    .tax-group-2{
+      display:none;
+    }
+
+
+  </style>
+
+
+{% endblock %}
+
+
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">Search Results: {{ num_results }}</h1>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <form method="POST">
+      <div class="form-row">
+        <div class="col-12 col-md-9 mb-2 mb-md-0">
+          <input type="text" class="form-control form-control-md" name="search" placeholder="Search item no, barcode, brand name or a product" value={{ query }}>
+        </div>
+        <div class="col-12 col-md-3">
+          <button type="submit" class="btn btn-block btn-md btn-primary">Search</button>
+        </div>
+
+      </div>
+
+      <br>
+
+
+    </form>
+
+  </div>
+
+  <br>
+
+  <!-- start of search results -->
+  <div class="container-fluid">
+
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+      <a href={{ url_for('export_data', query=query) }} class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+          <i class="fas fa-download fa-sm text-white-50"></i>
+          Export
+      </a>
+
+    </div>
+
+
+    <!-- start of search results -->
+    <div class="card shadow mb-4">
+
+        <div class="card-body">
+          <div class="table-responsive">
+            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+            <div class="row">
+              <div class="col-sm-12">
+                <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                <thead>
+                  <tr role="row">
+                    <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                      # ID
+                    </th>
+
+                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                      Name
+                    </th>
+
+                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                      Category
+                    </th>
+
+                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                      GTIN
+                    </th>
+
+                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                      Image
+                    </th>
+
+                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                      Price
+                    </th>
+
+                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                      Stock
+                    </th>
+
+                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">
+                      Options
+                    </th>
+
+                  </tr>
+                </thead>
+
+              <tbody>
+
+              {% for product in products %}
+              <tr role="row" class="odd">
+
+                  <td class="sorting_1">{{ product.id }}</td>
+
+                  <td>{{ product.name }}</td>
+
+                  <td>{{ product.category }}</td>
+
+                  <td>{{ product.gtin }}</td>
+
+                  <td>
+
+                    <img src={{ product.img }} alt="" height="150" width="70">
+
+                  </td>
+
+                  <td>{{ product.price }}</td>
+
+
+                  <td>
+                    <span class="badge badge-success">
+                      Yes
+                    </span>
+                  </td>
+
+
+                  <td>
+                    <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options</a>
+                    <br>
+                    <div class="dropdown-menu">
+
+                      <a class="dropdown-item view-product" href={{ url_for('view_product', product_id=product.id) }} id="view-{{ product.id }}">
+                        <i class="fas fa-eye"></i>
+                        View
+                      </a>
+
+                      <a class="dropdown-item add-to-cart" href={{ url_for('cache_product', product_id=product.id) }} id="view-{{ product.id }}">
+                        <i class="fas fa-plus"></i>
+                        Add
+                      </a>
+
+                      <a class="dropdown-item favori†e-product" href="#" id="view-{{ product.id }}">
+                        <i class="fas fa-heart"></i>
+                        Favorite
+                      </a>
+
+
+                      <a class="dropdown-item follow-product" href="#" id="view-{{ product.id }}">
+                        <i class="far fa-bell"></i>
+                        Follow
+                      </a>
+
+
+                      <a class="dropdown-item update-price-btn" href={{ product.amazon_url }} id="view-{{ product.id }}" target="_blank">
+                        <i class="fab fa-amazon"></i>
+                        View in Amazon
+                      </a>
+
+
+
+                    </div>
+
+                    <br>
+
+
+                  </td>
+
+
+                </tr>
+                {% endfor %}
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+  <!-- end of search results -->
+
+
+  {% block scripts %}
+  <!-- <script type="text/javascript">
+      // sorting the dated column in descending order
+      $(document).ready(function() {
+        $('#dataTable').DataTable({
+          'order':[[0, "desc"]]
+        });
+      } );
+  </script> -->
+
+  <script type="text/javascript">
+
+
+  var addCartBtns = document.querySelectorAll(".add-to-cart");
+
+
+
+
+  addCartBtns.forEach(
+    function(element){
+      element.addEventListener("click", console.log("Hello"));
+    }
+  )
+
+
+  </script>
+
+  <!-- <script src={{ url_for('static', filename="js/sourcing_cart.js") }}></script> -->
+
+
+  {% endblock %}
+
+
+{% endblock %}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Exhausted.one - digitize global trade</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href={{ url_for('static', filename="vendor/bootstrap/css/bootstrap.min.css") }} rel="stylesheet">
+
+  <!-- Custom fonts -->
+  <link href={{ url_for('static', filename="vendor/fontawesome-free/css/all.min.css") }} rel="stylesheet">
+
+  <link href={{ url_for('static', filename="vendor/simple-line-icons/css/simple-line-icons.css") }} rel="stylesheet" type="text/css">
+
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this templates -->
+  <link href={{ url_for('static', filename="css/vendor_signup.css") }} rel="stylesheet">
+
+  <!-- overiding some default css -->
+  {% block css %}
+
+  <style media="screen">
+
+      .card-signin .card-img-left {
+      width: 60%;
+      background: scroll center url(https://images.pexels.com/photos/262353/pexels-photo-262353.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500);
+      background-size: cover;
+    }
+
+  </style>
+
+
+  {% endblock %}
+
+
+
+</head>
+
+  <!-- This snippet uses Font Awesome 5 Free as a dependency. You can download it at fontawesome.io! -->
+
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-10 col-xl-9 mx-auto">
+      <div class="card card-signin flex-row my-5">
+        <div class="card-img-left d-none d-md-flex">
+
+           <!-- Background image for card set in CSS! -->
+        </div>
+        <div class="card-body">
+
+          <!-- render flashing messages -->
+          {% with messages = get_flashed_messages() %}
+
+          {% if messages %}
+
+            {% for message in messages %}
+
+            {% if msg_type == "success" %}
+
+            <div class="alert alert-success text-center" role="alert">
+                {{ message }}
+            </div>
+
+            {% else %}
+            <div class="alert alert-danger text-center" role="alert">
+                {{ message }}
+            </div>
+            {% endif %}
+
+            {% endfor %}
+
+          {% endif %}
+
+          {% endwith %}
+
+          <h5 class="card-title text-center">Register an account</h5>
+          <form class="form-signin" method="POST" enctype="multipart/form-data">
+
+            {{ form.hidden_tag() }}
+
+
+            <div class="form-label-group">
+              {{ form.full_name(class="form-control", placeholder="Full Name") }}
+              <label for="full_name">Full Name</label>
+            </div>
+
+            <div class="form-label-group">
+              {{ form.company_name(class="form-control", placeholder="Company Name") }}
+              <label for="company_name">Company Name</label>
+            </div>
+
+            <div class="form-label-group">
+              {{ form.email(class="form-control", placeholder="Email Address") }}
+              <label for="email">Email address</label>
+            </div>
+
+            <p>
+              {{ form.country.label() }}
+              {{ form.country(class="form-control") }}
+            </p>
+
+            <hr>
+
+            <div class="form-label-group">
+              {{ form.password(class="form-control", placeholder="Password") }}
+              <label for="password">Password</label>
+            </div>
+
+            <div class="form-label-group">
+              {{ form.password2(class="form-control", placeholder="Password") }}
+              <label for="password2">Confirm password</label>
+            </div>
+
+            {{ form.submit(class="btn btn-lg btn-primary btn-block text-uppercase") }}
+
+            <!-- <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign up</button> -->
+            <a class="d-block text-center mt-2 small" href={{ url_for('sign_in') }}>Sign In</a>
+            <hr class="my-4">
+
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap core JavaScript -->
+<script src={{ url_for('static', filename="vendor/jquery/jquery.min.js") }}></script>
+
+<script src={{ url_for('static', filename="vendor/bootstrap/js/bootstrap.bundle.min.js") }}></script>
+
+</body>
+
+</html>

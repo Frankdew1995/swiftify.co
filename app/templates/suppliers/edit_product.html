@@ -1,0 +1,249 @@
+{% extends "vendors/base.html" %}
+
+
+<!-- custom css for this page -->
+{% block css %}
+
+  <style media="screen">
+
+
+    #settingsForm{
+      width: 50%;
+    }
+
+    .tax-group-2{
+      display:none;
+    }
+
+
+  </style>
+
+
+{% endblock %}
+
+
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">{{ title }}</h1>
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <form class="form" method="POST" enctype="multipart/form-data" id="settingsForm">
+
+      {{ form.hidden_tag() }}
+
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-basic" role="tab" aria-controls="nav-home" aria-selected="true">
+            Basics
+          </a>
+
+          <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-others" role="tab" aria-controls="nav-profile" aria-selected="false">
+            Details
+          </a>
+
+          <a class="nav-item nav-link" id="nav-3rd-tab" data-toggle="tab" href="#nav-customs-tax" role="tab" aria-controls="nav-3rd-tab" aria-selected="false">
+            Customs & Taxes
+          </a>
+
+          <a class="nav-item nav-link" id="nav-4th-tab" data-toggle="tab" href="#nav-photo" role="tab" aria-controls="nav-4th-tab" aria-selected="false">
+            Photo(s)
+          </a>
+
+        </div>
+    </nav>
+
+
+    <div class="tab-content" id="nav-tabContent">
+
+          <div class="tab-pane fade show active" id="nav-basic" role="tabpanel" aria-labelledby="nav-home-tab">
+
+            <div class="form-label-group">
+              {{ form.name.label }}*
+              {{ form.name(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.gtin.label }}*
+              {{ form.gtin(class="form-control", placeholder="GTIN / EAN / UPC") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.brand_name.label }}
+              {{ form.brand_name(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.desc.label }}
+              {{ form.desc(class="form-control", placeholder="Description of the product") }}
+            </div>
+
+            <div class="form-label-group">
+
+              {{ form.net_price.label }}
+              {{ form.net_price(class="form-control", placeholder="") }}
+
+            </div>
+
+            <hr>
+
+
+          </div>
+
+          <div class="tab-pane fade" id="nav-others" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+            <!-- some ternary operators in this helper text -->
+            <div class="form-label-group">
+              {{ form.packing_units.label }}
+              {{ form.packing_units(class="form-control",
+                                    placeholder="quantity per packing unit") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.palletized_quantity.label }}
+              {{ form.palletized_quantity(class="form-control", placeholder="Quantity per pallet") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.ingredients.label }}*
+              {{ form.ingredients(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.manufacturer.label }}
+              {{ form.manufacturer(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.volume.label }}
+              {{ form.volume(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.net_weight.label }}
+              {{ form.net_weight(class="form-control") }}
+            </div>
+
+
+            <div class="form-label-group">
+              {{ form.length.label }}
+              {{ form.length(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.width.label }}
+              {{ form.width(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.height.label }}
+              {{ form.height(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.country.label }}*
+              {{ form.country(class="form-control") }}
+            </div>
+
+            <br>
+
+
+          </div>
+
+
+
+          <div class="tab-pane fade" id="nav-customs-tax" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+
+            <div class="form-label-group">
+              {{ form.hs_codes.label }}
+              {{ form.hs_codes(class="form-control") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.tax_rate.label }}
+              {{ form.tax_rate(class="form-control") }}
+            </div>
+
+            <br>
+
+
+          </div>
+
+          <div class="tab-pane fade" id="nav-photo" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+
+            <p>
+              {% if image %}
+              <img src={{ image }} alt="">
+              {% else %}
+              <span>no photo abvailable</span>
+              {% endif %}
+            </p>
+
+            <div class="form-label-group">
+              {{ form.image.label }}
+              {{ form.image(class="form-control-file") }}
+            </div>
+
+
+
+
+          </div>
+
+    </div>
+
+
+    <br>
+
+    {{ form.submit(class="btn btn-primary") }}
+
+
+    </form>
+
+
+
+
+  </div>
+
+  <br>
+
+
+
+  {% block scripts %}
+
+
+  {% endblock %}
+
+
+{% endblock %}

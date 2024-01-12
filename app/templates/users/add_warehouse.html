@@ -1,0 +1,63 @@
+{% extends "users/base.html" %}
+
+{% block topbar %}
+
+
+  <h1 class="h3 mb-0 text-gray-800">Add a new warehouse</h1>
+
+
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.warehouse_name.label(class="form-control-label") }}
+            {{ form.warehouse_name(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.warehouse_manager.label(class="form-control-label") }}
+            {{ form.warehouse_manager(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.email.label(class="form-control-label") }}
+            {{ form.email(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.address.label(class="form-control-label") }}
+            {{ form.address(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.city.label(class="form-control-label") }}
+            {{ form.city(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.state.label(class="form-control-label") }}
+            {{ form.state(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.zipcode.label(class="form-control-label") }}
+            {{ form.zipcode(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.country.label(class="form-control-label") }}
+            {{ form.country(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.warehouse_start_hours.label(class="form-control-label") }}
+            {{ form.warehouse_start_hours(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.warehouse_end_hours.label(class="form-control-label") }}
+            {{ form.warehouse_end_hours(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.notes.label(class="form-control-label") }}
+            {{ form.notes(class="form-control", placeholder="Write any notes that may help you later") }}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,553 @@
+{% extends "users/base.html" %}
+
+
+<!-- custom css for this page -->
+{% block css %}
+
+  <style media="screen">
+
+
+    #transport-mode{
+      display: none;
+    }
+
+    #customs-fields{
+      display: none;
+    }
+
+    #invisible{
+
+      display: none;
+    }
+
+
+    #freight-req-sent-alert{
+
+      display: none;
+    }
+
+
+
+  </style>
+
+
+{% endblock %}
+
+
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">New Shipment</h1>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <center>
+      <div class="alert alert-info" role="alert" id="freight-req-sent-alert">
+          We have received your freight quote request, and a quote will be automatically delivered to your inbox. Please stay tuned!
+      </div>
+    </center>
+
+
+    <form class="form" method="POST" enctype="multipart/form-data" id="logistics-form">
+
+
+      <nav>
+
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+            <a class="nav-item nav-link active logi-options" id="nav-home-tab" data-logi-mode="sea" data-toggle="tab" href="#sea-freight" role="tab" aria-controls="nav-home" aria-selected="true">
+              <i class="fas fa-ship"></i>
+              SEA
+            </a>
+
+            <a class="nav-item nav-link logi-options" id="nav-profile-tab" data-logi-mode="air" data-toggle="tab" href="#air-freight" role="tab" aria-controls="nav-profile" aria-selected="false">
+              <i class="fas fa-plane"></i>
+              AIR
+            </a>
+
+            <a class="nav-item nav-link logi-options" id="nav-profile-tab" data-logi-mode="road" data-toggle="tab" href="#road-freight" role="tab" aria-controls="nav-profile" aria-selected="false">
+              <i class="fas fa-truck-monster"></i>
+              ROAD (Beta)
+            </a>
+
+
+          </div>
+      </nav>
+
+
+      <div id="invisible">
+
+
+        <!-- user selected transport mode  -->
+        <span id="transport-mode"></span>
+
+
+        <span id="currentUser">{{ current_user.email }}</span>
+
+
+      </div>
+
+
+      <br>
+
+      <div class="tab-content" id="nav-tabContent">
+
+
+            <!-- tab1 -->
+            <div class="tab-pane fade show active" id="sea-freight" role="tabpanel" aria-labelledby="nav-home-tab">
+
+              <!-- start of sea freight -->
+
+                <div class="form-row">
+
+                  <div class="col-12 col-md-9 mb-2 mb-md-0">
+
+                    <label for="origin">Origin</label>
+                    <input type="text" class="form-control form-control-md" name="origin" placeholder="">
+
+                  </div>
+
+                </div>
+
+
+                <br>
+
+                <div class="form-row">
+
+                  <div class="col-12 col-md-9 mb-2 mb-md-0">
+
+                    <label for="dest">Destination</label>
+                    <input type="text" class="form-control form-control-md" name="dest" placeholder="">
+
+                  </div>
+
+                </div>
+
+
+                  <br>
+
+                  <div class="col-12 col-md-9 mb-2 mb-md-0">
+
+                    <p>
+                      Cargo Info
+                    </p>
+
+
+                  </div>
+
+
+                  <!-- start of cargo form -->
+                  <div class="card shadow mb-4">
+
+                      <div class="card-body">
+                        <div class="table-responsive">
+                          <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+                          <div class="row">
+                            <div class="col-sm-12">
+                              <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                              <thead>
+                                <tr role="row">
+                                  <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                                    # of Pieces
+                                  </th>
+
+                                  <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                                    Length (cm)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                                    Width (cm)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                                    Height (cm)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                                    Volume (cbm)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                                    Weight / Piece (kg)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                                    Description
+                                  </th>
+
+                                </tr>
+                              </thead>
+
+                            <tbody>
+
+
+                            <tr role="row" class="odd info-row">
+                                <td class="itemDescription sorting_1">
+
+                                  <input type="text" class="form-control bg-light info-input" placeholder="" name="pieces-quantity">
+
+                                </td>
+
+                                <td class="gtinInput">
+                                  <input type="text" class="form-control bg-light info-input" placeholder="">
+                                </td>
+
+                                <td class="qtyInput">
+                                  <input type="number" class="form-control bg-light price info-input" placeholder="" min=0>
+                                </td>
+
+
+                                <td class="priceInput">
+                                  <input type="number" class="form-control bg-light price info-input" placeholder="">
+                                </td>
+
+                                <td class="taxSelection">
+
+                                  <input type="number" class="form-control bg-light price info-input" placeholder="">
+
+
+                                </td>
+
+                                <td class="amount">
+
+                                  <input type="number" class="form-control bg-light price info-input" placeholder="">
+
+                                </td>
+
+                                <td class="amount">
+
+                                  <textarea name="name" rows="2" cols="8" class="form-control bg-light price info-input"></textarea>
+
+
+                                </td>
+
+                              </tr>
+
+                              <tr id="divisionTableRow" style="display:none"></tr>
+
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <!-- end of seafreight -->
+
+            </div>
+            <!-- end of tab1 -->
+
+
+            <!-- tab2  --> <!-- start of air freight  -->
+            <div class="tab-pane fade" id="air-freight" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+
+                <div class="form-row">
+
+
+                  <div class="col-12 col-md-9 mb-2 mb-md-0">
+
+                    <label for="origin">Origin</label>
+                    <input type="text" class="form-control form-control-md" name="origin" placeholder="Address / Airport" id="origin-air">
+
+                  </div>
+
+                </div>
+
+
+                <br>
+
+                <div class="form-row">
+
+                  <div class="col-12 col-md-9 mb-2 mb-md-0">
+
+                    <label for="dest">Destination</label>
+                    <input type="text" class="form-control form-control-md" name="dest" placeholder="Address / Airport" id="destination-air">
+
+                  </div>
+
+                </div>
+
+
+                  <br>
+
+                  <div id="map-container-air">
+
+                  </div>
+
+                  <div class="col-12 col-md-9 mb-2 mb-md-0">
+
+                    <p>
+                      Cargo Info
+                    </p>
+
+
+                  </div>
+
+
+                  <!-- start of cargo form -->
+                  <div class="card shadow mb-4">
+
+                      <div class="card-body">
+                        <div class="table-responsive">
+                          <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+                          <div class="row">
+                            <div class="col-sm-12">
+                              <table class="table table-bordered dataTable" id="dataTableAir" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                              <thead>
+                                <tr role="row">
+                                  <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                                    # of Pieces
+                                  </th>
+
+                                  <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                                    Length (cm)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                                    Width (cm)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                                    Height (cm)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                                    Volume (cbm)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                                    Weight / Piece (kg)
+                                  </th>
+
+                                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                                    Description
+                                  </th>
+
+                                </tr>
+                              </thead>
+
+
+                            <tbody>
+
+
+                            <tr role="row" class="odd info-row-air">
+
+                                <td class="quantity-air sorting_1">
+
+                                  <input type="text" class="form-control bg-light info-input-air" placeholder="" name="pieces-quantity">
+
+                                </td>
+
+                                <td class="length-air">
+                                  <input type="text" class="form-control bg-light info-input-air" placeholder="">
+                                </td>
+
+                                <td class="width-air">
+                                  <input type="number" class="form-control bg-light price info-input-air" placeholder="" min=0>
+                                </td>
+
+
+                                <td class="height-air">
+
+                                  <input type="number" class="form-control bg-light price info-input-air" placeholder="">
+
+                                </td>
+
+                                <td class="volume-air">
+
+                                  <input type="number" class="form-control bg-light price info-input-air" placeholder="" readonly="readonly">
+
+                                </td>
+
+                                <td class="weight-air">
+
+                                  <input type="number" class="form-control bg-light price info-input-air" placeholder="">
+
+                                </td>
+
+                                <td class="cargo-desc-air">
+
+                                  <textarea name="name" rows="2" cols="8" class="form-control bg-light price info-input-air"></textarea>
+
+                                </td>
+
+                              </tr>
+
+                              <tr id="divisionTableRowAir" style="display:none"></tr>
+
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- end of cargo form -->
+
+
+              <!-- start of add new cargo -->
+              <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+                <a href="#dataTableAir" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="addNewAirCargo">
+                  Add more cargo
+                </a>
+
+              </div>
+              <!-- end of add more cargo -->
+
+
+              <fieldset>
+
+
+                <div class="form-row">
+
+
+                  <div class="form-check">
+
+                    <input class="form-check-input" type="checkbox" name="stackable" id="stackable" value="yes">
+                    <label class="form-check-label" for="stackable">
+                      Stackable Goods
+                    </label>
+                    <i class="far fa-question-circle stackable-question" data-toggle="popover" data-placement="right" data-content="Goods are packable in a way that allows the pallets to be stacked on top of each other."></i>
+
+                  </div>
+
+                </div>
+
+
+                <br>
+
+                <div class="form-row">
+
+                  <div class="form-check">
+
+                    <input class="form-check-input" type="checkbox" name="customs" id="customs" value="yes">
+                    <label class="form-check-label" for="exampleRadios1">
+                      Customs Clearance
+                    </label>
+
+                    <p style="font-style:italic">We will clear customs for this shipment while you can also book the export documents from here.</p>
+
+                  </div>
+
+                </div>
+
+                <div id="customs-fields">
+
+                  <div class="form-row">
+
+
+                    <div class="form-check">
+
+                      <input class="form-check-input" type="checkbox" name="export-documents" id="export-documents" value="yes">
+                      <label class="form-check-label" for="exampleRadios1">
+                        Export Documents
+                      </label>
+
+                    </div>
+
+                  </div>
+
+                  <br>
+
+                  <div class="form-row">
+
+                    <label for="origin">Number of HS Codes</label>
+                    <input type="text" class="form-control form-control-md" name="hs-codes" placeholder="Enter the number of HS Codes to be declared. Don't enter the actual HS Codes here.">
+
+                  </div>
+
+
+                  <div class="form-row hidden-air-cargo-data">
+
+                    <label for="origin">Hidden air cargo data</label>
+                    <input type="text" class="form-control form-control-md" name="hidden-air-cargo-data" value="" id="hidden-air-cargo-data">
+
+                  </div>
+
+
+
+                </div>
+
+              </fieldset>
+
+
+            </div>
+            <!-- enf of tab2 --><!-- end of air freight  -->
+
+
+            <!-- start of tab3 road logistics-->
+            <div class="tab-pane fade" id="road-freight" role="tabpanel" aria-labelledby="nav-profile-tab">
+              <p>Hey, this feature is not availanle yet! And check back soon </p>
+            </div>
+            <!-- enf of tab3 -->
+
+
+          <!-- end of tab content  -->
+
+    <br>
+
+    <div class="form-row">
+
+        <div class="col-12 col-md-3">
+          <button type="submit" class="btn btn-block btn-md btn-primary" id="search">Search</button>
+        </div>
+
+    </div>
+
+    </form>
+
+  </div>
+
+  <br>
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block scripts %}
+
+
+<script src={{ url_for('static', filename="js/logistics.js") }} charset="utf-8"></script>
+
+
+
+
+{% endblock %}

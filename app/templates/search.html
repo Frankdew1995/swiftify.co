@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+
+
+{% block css %}
+
+<style media="screen">
+
+  #terms {
+
+    margin-top: 5px;
+    font-size: 1.5rem;
+  }
+
+
+  #slogan{
+    color:azure;
+  }
+
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- render flashing messages -->
+{% with messages = get_flashed_messages() %}
+
+{% if messages %}
+
+  {% for message in messages %}
+
+  <div class="alert alert-success text-center" role="alert">
+      {{ message }}
+  </div>
+
+  {% endfor %}
+
+{% endif %}
+
+{% endwith %}
+
+
+<!-- Navigation -->
+
+  <!-- Call to Action -->
+  <section class="call-to-action text-white text-center">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-9 mx-auto">
+          <!-- <h2 class="mb-4">Sourcing, procurement and logistics management made easy with Swiftify. Start now by searching a product.</h2> -->
+        </div>
+        <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
+          <form method="POST">
+            <div class="form-row">
+              <div class="col-12 col-md-9 mb-2 mb-md-0">
+                <input type="text" class="form-control form-control-lg" name="search" placeholder="Search item no, barcode, brand name or a product">
+              </div>
+              <div class="col-12 col-md-3">
+                <button type="submit" class="btn btn-block btn-lg btn-primary">Search</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- Trending searches by keywords -->
+<div class="trending col-md-10 col-lg-8 col-xl-7 mx-auto text-center">
+
+  <p id="terms">Trending:
+    {% for term in common_searches %}
+
+    <a href={{ url_for("render_search_results", query=term) }} target="_blank">
+
+      <span>
+        #{{ term }}
+      </span>
+
+    </a>
+
+    {% endfor %}
+  </p>
+
+</div>
+
+
+{% endblock %}

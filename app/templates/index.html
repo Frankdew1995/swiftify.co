@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+
+
+{% block css %}
+
+<style media="screen">
+
+  #terms {
+
+    margin-top: 5px;
+    font-size: 1.5rem;
+  }
+
+
+  #slogan{
+    color:azure;
+  }
+
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- render flashing messages -->
+{% with messages = get_flashed_messages() %}
+
+{% if messages %}
+
+  {% for message in messages %}
+
+  <div class="alert alert-success text-center" role="alert">
+      {{ message }}
+  </div>
+
+  {% endfor %}
+
+{% endif %}
+
+{% endwith %}
+
+
+<!-- Navigation -->
+<div class="container">
+
+    <nav class="navbar navbar-light bg-light static-top">
+
+
+          <a class="navbar-brand" href="#">
+            <img src={{ url_for('static', filename="img/default.svg")}} width="70" height="70" alt="">
+          </a>
+
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link active" href="#">Product</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Pricing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">#Tune in</a>
+            </li>
+
+          </ul>
+
+          <a class="btn btn-primary" href="#">Join as a beta user</a>
+
+        </nav>
+
+
+
+  </div>
+
+
+
+
+  <!-- Call to Action -->
+  <section class="call-to-action text-white text-center">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-9 mx-auto">
+          <h2 class="mb-4">Sourcing, procurement and logistics management made easy with Swiftify. Start now by searching a product.</h2>
+        </div>
+        <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
+          <form method="POST">
+            <div class="form-row">
+              <div class="col-12 col-md-9 mb-2 mb-md-0">
+                <input type="text" class="form-control form-control-lg" name="search" placeholder="Search item no, barcode, brand name or a product">
+              </div>
+              <div class="col-12 col-md-3">
+                <button type="submit" class="btn btn-block btn-lg btn-primary">Search</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- Trending searches by keywords -->
+<div class="trending col-md-10 col-lg-8 col-xl-7 mx-auto text-center">
+
+  <p id="terms">Trending:
+    {% for term in common_searches %}
+
+    <a href={{ url_for("render_search_results", query=term) }} target="_blank">
+
+      <span>
+        #{{ term }}
+      </span>
+
+    </a>
+
+    {% endfor %}
+  </p>
+
+</div>
+
+<!-- Icons Grid -->
+<section class="features-icons bg-light text-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+          <div class="features-icons-icon d-flex">
+            <i class="fas fa-shield-alt m-auto text-primary"></i>
+          </div>
+          <h3>Reliable</h3>
+          <p class="lead mb-0">Connect with reliable and honest vendors directly. No spammy and scam suppliers</p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+          <div class="features-icons-icon d-flex">
+            <i class="fas fa-robot m-auto text-primary"></i>
+          </div>
+          <h3>Automate</h3>
+          <p class="lead mb-0">
+            Automate your sourcing and quotation request flow: 1. Search products 2.Select 3. Request a quote
+          </p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+          <div class="features-icons-icon d-flex">
+            <i class="fas fa-bolt m-auto text-primary"></i>
+          </div>
+          <h3>Efficient</h3>
+          <p class="lead mb-0">
+            Collaborate with vendors in real-time and get notified whenever your quotation updates. No more tedious manual email back and forth
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="footer bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+        <ul class="list-inline mb-2">
+          <li class="list-inline-item">
+            <a href="#">About</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item">
+            <a href="#">Contact</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item">
+            <a href={{ url_for('vendor_register') }}>Sign up as a vendor!</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item">
+            <a href="#">API (Coming soon)</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item">
+            <a href="#">Donate/捐赠/Unterstützung</a>
+          </li>
+        </ul>
+        <p class="text-muted small mb-4 mb-lg-0">
+          &copy; Swiftify.cc 2019. All Rights Reserved. Engineered by <a href="https://frankdu.co" target="_blank">Frank Du</a>
+        </p>
+
+
+
+      </div>
+      <div class="col-lg-6 h-100 text-center text-lg-right my-auto">
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item mr-3">
+            <a href="#">
+              <i class="fab fa-linkedin fa-2x fa-fw"></i>
+            </a>
+          </li>
+          <li class="list-inline-item mr-3">
+            <a href="https://t.me/swiftify" target="blank">
+              <i class="fab fa-telegram fa-2x fa-fw"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">
+              <i class="fab fa-discord fa-2x fa-fw"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- end of footer -->
+
+
+{% endblock %}

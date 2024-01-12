@@ -1,0 +1,61 @@
+{% extends "users/base.html" %}
+
+<!-- custom css for this page -->
+{% block css %}
+<style media="screen">
+
+</style>
+{% endblock %}
+
+{% block topbar %}
+<h1 class="h3 mb-0 text-gray-800">{{ title }}</h1>
+{% endblock %}
+
+{% block content %}
+<!-- render flashing messages -->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success text-center" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <form class="form" method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-label-group">
+            {{ form.user_name.label }}
+            {{ form.user_name(class="form-control") }}
+        </div>
+
+        <div class="form-label-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control") }}
+        </div>
+
+        <div class="form-label-group">
+            {{ form.role_id.label }}
+            {{ form.role_id(class="form-control") }}
+        </div>
+
+        <div class="form-label-group">
+            {{ form.password.label }}
+            {{ form.password(class="form-control") }}
+        </div>
+
+        <div class="form-label-group">
+            {{ form.confirm_password.label }}
+            {{ form.confirm_password(class="form-control") }}
+        </div>
+        <br>
+        <div class="form-label-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

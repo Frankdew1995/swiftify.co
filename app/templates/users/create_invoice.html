@@ -1,0 +1,402 @@
+{% extends "users/base.html" %}
+
+
+{% block css %}
+
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+<style media="screen">
+
+    .invisible{
+      display:none;
+    }
+
+
+    #auto-saving-msg{
+      display:none;
+    }
+
+</style>
+
+
+{% endblock %}
+
+
+{% block topbar %}
+
+
+  <h1 class="h3 mb-0 text-gray-800">Create Invoice</h1>
+
+
+
+{% endblock %}
+
+
+
+{% block content %}
+<div class="container-fluid">
+
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+          <!-- for hiding information -->
+          <div class="invisible">
+            <span id="invoiceSender">{{ current_user.email }}</span>
+          </div>
+
+          <!-- customer name -->
+          <form>
+
+            <label for="Customer">Customer</label>
+            <input type="text" name="customer" class="form-control bg-light" id="customer" required type="text">
+
+            <!-- render matcheed results -->
+            <div id="match-list">
+
+            </div>
+
+          </form>
+
+
+
+          <!-- invoice form -->
+          <form>
+
+            <label for="invoiceDate">Dated</label>
+            <input type="date" name="invoiceDate" class="form-control bg-light" id="invoiceDate">
+
+          </form>
+
+
+          <!-- invoice number -->
+          <form>
+
+            <label for="invoiceNum">
+              Invoice #
+            </label>
+            <input type="text" name="invoiceNum" class="form-control bg-light" id="invoiceNum" value={{ invoice_number }}>
+
+          </form>
+
+
+
+          <!-- terms selection -->
+          <form>
+
+            <label for="terms">
+              Terms
+            </label>
+
+            <select class="form-control" name="terms" id="terms">
+              <option value="">Select</option>
+              <option value=0>Due on receipt</option>
+              <option value=15>Net 15</option>
+              <option value=30>Net 30</option>
+
+            </select>
+
+
+          </form>
+
+
+          <form>
+
+
+            <label for="dueDate">Due Date</label>
+            <input type="date" name="dueDate" class="form-control bg-light" id="dueDate">
+
+          </form>
+
+        </div>
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i>
+            Export
+          </a>
+
+          <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="exit" href={{ url_for('view_invoices') }}>
+            <i class="fas fa-times-circle"></i>
+            Exit editing
+          </a>
+
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary dropdown-toggle shadow-sm update-price-btn" id="send" data-toggle="dropdown">
+            <i class="fas fa-paper-plane"></i>
+            Save & Send
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item update-price-btn" href="#" data-toggle="modal" id="email" data-toggle="modal" data-target="#SendInvoiceAlert">Email</a>
+            <a class="dropdown-item update-price-btn" href="#" data-toggle="modal" data-target="#userInputAlert" id="share" data-toggle="modal" data-target="#ShareInvoiceAlert">Share</a>
+          </div>
+
+        </div>
+
+
+
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+                <div class="row">
+                  <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                    <thead>
+                      <tr role="row">
+                        <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                          Item
+                        </th>
+
+                        <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                          GTIN / EAN / UPC
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Quantity
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Unit Price (excl Tax)
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Tax Rate
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Amount
+                        </th>
+
+                      </tr>
+                    </thead>
+
+                  <tbody>
+
+
+                  <tr role="row" class="odd info-row">
+                      <td class="itemDescription sorting_1">
+
+                        <textarea name="itemDescription" rows="2" cols="8" class="form-control bg-light info-input">
+                        </textarea>
+
+                      </td>
+
+                      <td class="gtinInput">
+                        <input type="text" class="form-control bg-light info-input" placeholder="">
+                      </td>
+
+                      <td class="qtyInput">
+                        <input type="number" class="form-control bg-light price info-input" placeholder="" min=0>
+                      </td>
+
+
+                      <td class="priceInput">
+                        <input type="number" class="form-control bg-light price info-input" placeholder="">
+                      </td>
+
+                      <td class="taxSelection">
+
+                        <select class="form-control info-input" name="taxRateTiers">
+
+                          <option value=0>0%</option>
+                          <option value=0.07 id="taxRate1">7%</option>
+                          <option value=0.19 id="taxRate2">19%</option>
+
+                        </select>
+
+                      </td>
+
+                      <td class="amount">
+
+                      </td>
+
+                    </tr>
+
+                    <tr id="divisionTableRow" style="display:none"></tr>
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- 3rd  -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+      <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm update-quote-btn" id="addNewLine">
+        Add item line
+      </a>
+
+    </div>
+
+    Customer Notes
+
+    <textarea name="customerNotes" rows="2" cols="8" class="form-control bg-light info-input" id="customerNotes">
+    </textarea>
+
+    <br>
+    <!-- 4th  -->
+    <center>
+      <div class="alert alert-info" role="alert" id="auto-saving-msg">
+          Auto saving...
+      </div>
+    </center>
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+      <!-- placeholder element -->
+      <span></span>
+
+
+      <form>
+
+        <label for="subtotal">Subtotal</label>
+        <input type="text" name="subtotal" class="form-control bg-light" id="subtotal" readonly="readonly">
+
+        <br>
+
+        <label for="subtotal">Discount</label>
+        <input type="text" name="discount" class="form-control bg-light info-input" id="discount" value=0>
+
+        <br>
+
+        <label for="taxAmount">Tax Amount</label>
+        <input type="text" name="taxAmount" class="form-control bg-light" id="taxAmount" readonly="readonly">
+
+        <br>
+
+        <label for="shippingCharges">Shipping Charges</label>
+        <input type="text" name="shippingCharges" class="form-control bg-light info-input" id="shippingCharges" value=0>
+
+        <br>
+
+        <label for="total">Total</label>
+        <input type="text" name="total" class="form-control bg-light" id="total" readonly="readonly">
+
+      </form>
+
+
+    </div>
+
+
+    <!-- Vendor Save Alert -->
+    <!-- Modal -->
+    <div class="modal fade" id="SendInvoiceAlert" tabindex="-1" role="dialog" aria-labelledby="SendInvoiceAlert" aria-hidden="true">
+
+      <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="vendorSaveAlertLabel">Send invoice</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+
+            <form action='' method="POST" enctype="multipart/form-data">
+
+              {{ form.hidden_tag() }}
+
+              <p>
+                  {{ form.invoice_id.label }}<br>
+                  {{ form.invoice_id(class="form-control bg-light", readonly="readonly")}}
+              </p>
+
+              <p>
+                  {{ form.from_.label }}<br>
+                  {{ form.from_(class="form-control bg-light", value=current_user.email, readonly="readonly") }}
+              </p>
+
+              <p>
+                  {{ form.to.label }}<br>
+                  {{ form.to(class="form-control bg-light", placeholder="Please enter recipient email address")}}
+              </p>
+
+              <p>
+                  {{ form.cc.label }}<br>
+                  {{ form.cc(class="form-control bg-light", placeholder="This field is optional")}}
+              </p>
+
+              <p>
+                  {{ form.subject.label }}<br>
+                  {{ form.subject(class="form-control bg-light", placeholder="Enter the subject of this email")}}
+              </p>
+
+
+              <p>
+                  {{ form.message.label }}<br>
+                  {{ form.message(class="form-control bg-light", placeholder="Enter the body of the email")}}
+              </p>
+
+
+              <p>
+
+                  {{ form.submit(class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm") }}
+
+
+              </p>
+
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- end of vendo`r save quote alert -->
+
+</div>
+<!--  end of contaner fluid-->
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+
+
+<script type="text/javascript">
+
+    // sorting the dated column in descending order
+    $(document).ready(function() {
+      $('#dataTable').DataTable({
+        "paging": false,
+        "bFilter": false
+      });
+    } );
+
+</script>
+
+
+<!-- Page level plugins -->
+<script src={{ url_for('static', filename="vendor/datatables/jquery.dataTables.min.js") }} charset="utf-8"></script>
+
+
+<script src={{ url_for('static', filename="vendor/datatables/dataTables.bootstrap4.min.js") }} charset="utf-8"></script>
+
+
+<!-- Page level custom scripts  activate the datatable functionality -->
+<script src={{ url_for('static', filename="js/demo/datatables-demo.js") }}></script>
+<script src={{ url_for('static', filename="js/user_create_invoice.js") }}></script>
+
+
+
+<!-- autom complete js -->
+<script src={{ url_for('static', filename="js/accounts_autocomplete.js") }}></script>
+
+
+
+{% endblock %}

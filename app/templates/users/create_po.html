@@ -1,0 +1,286 @@
+{% block css %}
+
+
+<style media="screen">
+
+    .invisible{
+      display:none;
+    }
+
+
+    #auto-saving-msg{
+      display:none;
+    }
+
+    #form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    #form-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    #form-table th,
+    #form-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      white-space: nowrap; /* Add this line */
+      overflow-wrap: break-word;
+
+    }
+
+    #form-table th {
+      font-weight: bold;
+      background-color: #4e73df;
+      color: #fff;
+    }
+
+    #form-table td input[type="text"],
+    #form-table td input[type="number"],
+    #form-table td select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .delete-btn {
+      background-color: #e74a3b;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    #subtotal,
+    #tax-rate,
+    #tax-amount,
+    #shipping-charges,
+    #total {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    #autoFillBtn,
+    #submitBtn {
+      background-color: #4e73df;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .product-image {
+        max-width: 50%;
+        max-height: 50%;
+        object-fit: contain;
+      }
+
+
+
+</style>
+
+
+{% endblock %}
+
+
+{% extends "users/base.html" %}
+
+
+
+{% block topbar %}
+
+
+  <h1 class="h3 mb-0 text-gray-800">Create a Purchase Requisition</h1>
+
+
+
+{% endblock %}
+
+
+
+{% block content %}
+<div class="container-fluid">
+
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+
+          {{ form.hidden_tag() }}
+
+          <!-- for hiding information -->
+          <div class="invisible">
+            <span id="poSender">{{ current_user.tenant_id }}</span>
+          </div>
+
+          <!-- supplier name -->
+          <form class="form" method="POST" enctype="multipart/form-data">
+
+            {{ form.supplier.label }}*
+            {{ form.supplier(class="form-control", value="Please select", id="supplierUUID") }}
+
+            <!-- render matcheed results -->
+            <div id="match-list">
+
+            </div>
+
+          </form>
+
+
+          
+          <!-- receiving warehouse -->
+          <form class="form" method="POST" enctype="multipart/form-data">
+
+            {{ form.warehouse.label }}*
+            {{ form.warehouse(class="form-control", value="Please selec") }}
+
+          </form>
+
+
+          <!-- invoice form -->
+          <form>
+
+            <label for="poDate">Dated</label>
+            <input type="date" name="poDate" class="form-control bg-light" id="poDate" value={{ today }}>
+
+          </form>
+
+
+
+          <!-- PO form -->
+          <form>
+
+            <label for="internalReference">Reference</label>
+            <input type="text" name="internalReference" class="form-control bg-light" id="internalReference">
+
+          </form>
+
+        </div>
+
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <a href="#" class="btn btn-sm btn-primary" id="autoFillBtn">
+            <i class="fa-solid fa-pen"></i>
+            Auto fill
+          </a>
+
+          <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="exit" href={{ url_for('view_pos') }}>
+            <i class="fas fa-times-circle"></i>
+            Exit editing
+          </a>
+
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="submitBtn" >
+            <i class="fas fa-paper-plane"></i>
+            Save & Submit
+          </a>
+
+        </div>
+
+
+
+        <table id="form-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Item</th>
+              <th>Barcode</th>
+              <th>Quantity</th>
+              <th>Purchase Price {{ currency }}</th>
+              <th>Tax Rate %</th>
+              <th>Subtotal Amount</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><img src="" alt="" class="product-image"></td>
+              <td><input type="text" class="item-input" placeholder="Enter item"></td>
+              <td><input type="text" class="barcode-input" placeholder="Enter barcode"></td>
+              <td><input type="number" class="quantity-input" placeholder="Enter quantity"></td>
+              <td><input type="number" class="purchase-price-input" placeholder="Enter purchase price"></td>
+              <td><input type="number" class="tax-rate-input" placeholder="Enter tax rate"></td>
+              <td><input type="number" class="subtotal-amount-input" placeholder="Subtotal" readonly></td>
+              <td>
+                <button class="delete-btn">X</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+
+        <div>
+          <label for="subtotal">Subtotal:</label>
+          <input type="number" id="subtotal" placeholder="Subtotal" readonly>
+        </div>
+
+        <div>
+          <label for="tax-amount">Tax Amount:</label>
+          <input type="number" id="tax-amount" placeholder="Tax Amount" readonly>
+        </div>
+
+        <div>
+          <label for="total">Total:</label>
+          <input type="number" id="total" placeholder="Total" readonly>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="supplierNotes">Supplier Notes:</label>
+            <textarea class="form-control" id="supplierNotes" rows="4" cols="50" placeholder="Write supplier notes here..."></textarea>
+        </div>
+
+        <div>
+          <label for="warehouseNotes">Warehouse Notes:</label>
+          <textarea class="form-control" id="warehouseNotes" rows="4" cols="50" placeholder="Write warehouse notes here..."></textarea>
+        </div>
+
+        <br>
+
+        <button id="addRowBtn" class="btn btn-sm btn-primary">Add Row</button>
+
+  </div>
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+{% block scripts %}
+
+
+<script src={{ url_for('static', filename="js/user_create_po.js") }} charset="utf-8"></script>
+
+
+
+<!-- Page level plugins -->
+<script src={{ url_for('static', filename="vendor/datatables/jquery.dataTables.min.js") }} charset="utf-8"></script>
+
+
+<script src={{ url_for('static', filename="vendor/datatables/dataTables.bootstrap4.min.js") }} charset="utf-8"></script>
+
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "users/base.html" %}
+
+
+<!-- Topbar Search -->
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">View User {{ user.user_name }}</h1>
+
+
+{% endblock %}
+
+
+<!-- render flashing messages -->
+{% with messages = get_flashed_messages() %}
+
+{% if messages %}
+
+  {% for message in messages %}
+
+  <div class="alert alert-success text-center" role="alert">
+      {{ message }}
+  </div>
+
+  {% endfor %}
+
+{% endif %}
+
+{% endwith %}
+
+
+
+{% block content %}
+
+
+    <div class="container-fluid">
+      <p>Name: {{ user.user_name }}</p>
+      <p>Email: {{ user.email }}</p>
+      <p>Role: {{ user.role.name }}</p>
+      <p>Activated: {{ "Yes" if user.activated else "No" }}</p>
+    </div>
+
+{% endblock %}

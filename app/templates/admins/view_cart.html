@@ -1,0 +1,316 @@
+{% extends "users/base.html" %}
+
+
+{% block css %}
+
+
+<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css"> -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+<style media="screen">
+
+    .invisible{
+      display:none;
+    }
+
+</style>
+
+
+{% endblock %}
+
+
+{% block topbar %}
+
+
+  <h1 class="h3 mb-0 text-gray-800">Cart</h1>
+
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+    <!-- render flashing messages -->
+    {% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+      {% for message in messages %}
+
+      <div class="alert alert-success text-center" role="alert">
+          {{ message }}
+      </div>
+
+      {% endfor %}
+
+    {% endif %}
+
+    {% endwith %}
+
+
+<div class="container-fluid">
+
+
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+          <!-- for hiding information -->
+          <div class="invisible">
+
+            <span id="cartOwner">{{ current_user.email }}</span>
+
+          </div>
+
+
+
+        </div>
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4" id="actionBtns" style="display:none">
+          <a href={{ url_for('remove_product_cache', product_id="all") }}  class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn">
+            <i class="fas fa-trash-alt fa-sm text-white-50"></i>
+            Clear cart
+          </a>
+
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn" id="save" data-toggle="modal" data-target="#vendorSaveAlert">
+            <i class="fas fa-marker"></i>
+            Share & Collaborate
+          </a>
+
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn" id="send" data-toggle="modal" data-target="#sendQuotationRequestAlert">
+            <i class="fas fa-paper-plane"></i>
+            Request
+          </a>
+
+
+        </div>
+
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+
+                <div class="row">
+                  <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                    <thead>
+                      <tr role="row">
+                        <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                          Item ID
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Name
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Brand
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          EAN / GTIN
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Quantity
+                        </th>
+
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">
+                          <i class="fas fa-euro-sign"></i>
+                          Price
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">
+                          Image
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">
+                          Action
+                        </th>
+
+                      </tr>
+                    </thead>
+
+                  <tbody>
+
+                  <!-- start for  -->
+                  {% for item in items %}
+                  <tr role="row" class="odd info-row">
+
+                      <td class="sorting_1">
+
+                        {{ item.id }}
+
+                      </td>
+
+
+                      <td>
+
+
+                        {{ item.name }}
+
+
+                      </td>
+
+
+                      <td>
+
+                        {{ item.brand }}
+
+                      </td>
+
+
+                      <td>
+
+                        {{ item.gtin }}
+
+                      </td>
+
+                      <td>
+
+                        <input type="number" class="form-control bg-light price" placeholder="" value=1 min=1>
+
+                      </td>
+
+
+
+                      <td>
+
+                        {{ item.price }}
+
+                      </td>
+
+
+                      <td>
+
+                        <img src={{  item.img }} alt="" height="150" width="100">
+
+                      </td>
+
+                      <td>
+
+                          <a href={{ url_for('remove_product_cache', product_id=item.id) }} class="btn btn-primary">
+                            <i class="fas fa-trash-alt"></i>
+                          </a>
+
+                      </td>
+
+
+                    </tr>
+                    {% endfor %}
+
+                    <!-- end for -->
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Quotation Request Alert -->
+          <!-- Modal -->
+          <div class="modal fade" id="sendQuotationRequestAlert" tabindex="-1" role="dialog" aria-labelledby="vendorSaveAlertLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="vendorSaveAlertLabel">Quotation Request Sent to Vendors</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  <p id="alertContent">
+                    Great! You've sent the quotation requests to concerning vendors.
+                    Quotes will be available in your dashboard soon after updated by the vendors.
+                  </p>
+
+                </div>
+                <div class="modal-footer">
+
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                  </button>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end of Quotation Request Alert -->
+
+
+
+          <!-- Cart Share Alert -->
+          <!-- Modal -->
+          <div class="modal fade" id="cartShareAlert" tabindex="-1" role="dialog" aria-labelledby="vendorSaveAlertLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="vendorSaveAlertLabel">Quotation Request Sent to Vendors</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  <p id="alertContent">
+                    Great! You've sent the quotation requests to concerning vendors.
+                    Quotes will be available in your dashboard soon after updated by the vendors.
+                  </p>
+
+                </div>
+                <div class="modal-footer">
+
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                  </button>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end of Cart Share Alert -->
+
+
+
+
+
+
+
+
+</div>
+<!--  end of contaner fluid-->
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+
+<!-- Page level plugins -->
+<script src={{ url_for('static', filename="vendor/datatables/jquery.dataTables.min.js") }} charset="utf-8"></script>
+
+
+<script src={{ url_for('static', filename="vendor/datatables/dataTables.bootstrap4.min.js") }} charset="utf-8"></script>
+
+
+<!-- Page level custom scripts  activate the datatable functionality -->
+<script src={{ url_for('static', filename="js/demo/datatables-demo.js") }}></script>
+<script src={{ url_for('static', filename="js/cart.js") }}></script>
+
+
+
+
+{% endblock %}

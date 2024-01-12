@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ product.name }}</h2>
+            </div>
+            <div class="card-body">
+
+                <img src="{{ img }}" class="img-fluid mb-3" alt="Product Image">
+                <h5 class="card-title">Details</h5>
+                <p>GTIN: {{ product.gtin }}</p>
+                <p>Colli Barcode: {{ product.colli_barcode }}</p>
+                <p>Description: {{ product.description }}</p>
+                <p>Price: {{ product.price }}</p>
+                <p>Origin: {{ product.origin }}</p>
+                <p>Is Available: {{ 'Yes' if product.is_available else 'No' }}</p>
+                <p>Created At: {{ product.time_created }}</p>
+
+                <h5 class="card-title mt-3">Packing Data</h5>
+                <p>Packing Unit Quantity: {{ product.pu_quantity }}</p>
+                <p>Packing Unit Grossweight(kg): {{ product.pu_gw }}</p>
+                <p>Palletized Quantity: {{ product.palletized_quantity }}</p>
+                <p>Grossweight per Pallet(kg): {{ product.palletized_gw }}</p>
+                <p>Pallet Length(cm): {{ product.pallet_length }}</p>
+                <p>Pallet Width(cm): {{ product.pallet_width }}</p>
+                <p>Pallet Height(cm): {{ product.pallet_height }}</p>
+
+                <h5 class="card-title mt-3">Customs Data</h5>
+                <p>HS Code: {{ product.hs_code }}</p>
+                <p>VAT: {{ product.vat }}</p>
+
+                <h5 class="card-title mt-3">Stock Data</h5>
+                <p>Stock Location: {{ product.stock_location }}</p>
+                <p>Owned by: {{ product.tenant.company_name }}</p>
+
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

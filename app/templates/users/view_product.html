@@ -1,0 +1,172 @@
+{% extends "users/base.html" %}
+
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">{{ name }}</h1>
+
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card-body">
+
+                  <!-- buttons -->
+                  <div class="d-flex justify-content-between mb-3">
+
+                        <button class="btn btn-primary">
+                          <i class="fa-regular fa-file-word"></i>
+                          Add Notes
+                        </button>
+                        <div class="dropdown">
+                            <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">
+                              <i class="fa-solid fa-gears"></i>
+                                Tools
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                  <a class="dropdown-item" href="#">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                    Generate a QRCode
+                                  </a>
+                                </li>
+
+
+                                <li>
+                                  <a class="dropdown-item" href="#">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                    Generate a PDF File
+                                  </a>
+                                </li>
+
+
+                                <li class="">
+                                    <a class="dropdown-item" href={{ url_for('export_product_csv',product_uuid=product.uuid, file_format="csv") }} id="navbarDropdown">
+                                        <i class="fa-solid fa-download"></i>
+                                        Export data as CSV
+                                    </a>
+                                </li>
+
+
+                                <li>
+                                  <a class="dropdown-item" href="#">
+                                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                    Share the product
+                                  </a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href={{ url_for("edit_product", product_uuid=product.uuid) }}>
+                                    <i class="fa-solid fa-pen-nib"></i>
+                                    Edit
+                                  </a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item danger" href="#">
+                                    <i class="fa-solid fa-trash"></i>
+                                    Delete
+                                  </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" id="productTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="packing-data-tab" data-toggle="tab" href="#packing-data" role="tab" aria-controls="packing-data" aria-selected="false">Packing Data</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="customs-data-tab" data-toggle="tab" href="#customs-data" role="tab" aria-controls="customs-data" aria-selected="false">Customs Data</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="stock-data-tab" data-toggle="tab" href="#stock-data" role="tab" aria-controls="stock-data" aria-selected="false">Stock Data</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="suppliers-tab" data-toggle="tab" href="#suppliers" role="tab" aria-controls="suppliers" aria-selected="false">Suppliers</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content" id="productTabContent">
+                        <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                            <br>
+                            <!-- Details -->
+                            <p class="card-text">Barcode: {{ product.gtin }}</p>
+                            <p class="card-text">Colli Barcode: {{ product.colli_barcode }}</p>
+                            <p class="card-text">Description: {{ product.description }}</p>
+                            <p class="card-text">Stock Quantity: {{ product.stock_quantity }}</p>
+                            <p class="card-text">Price: {{ product.price }}</p>
+                            <p class="card-text">Origin: {{ product.origin }}</p>
+                            <p class="card-text">Is Available: {{ "Yes" if product.is_available else "No" }}</p>
+                            <p class="card-text">Time Created: {{ product.time_created }}</p>
+                        </div>
+                        <div class="tab-pane fade" id="packing-data" role="tabpanel" aria-labelledby="packing-data-tab">
+                            <!-- Packing Data -->
+                            <br>
+
+                            <h5 class="card-title">Packing Data</h5>
+                            <p class="card-text">Packing Unit Quantity: {{ product.pu_quantity }}</p>
+                            <p class="card-text">Packing Unit Grossweight(kg): {{ product.pu_gw }}</p>
+                            <p class="card-text">Palletized Quantity: {{ product.palletized_quantity }}</p>
+                            <p class="card-text">Grossweight per Pallet(kg): {{ product.palletized_gw }}</p>
+                            <p class="card-text">Pallet Length(cm): {{ product.pallet_length }}</p>
+                            <p class="card-text">Pallet Width(cm): {{ product.pallet_width }}</p>
+                            <p class="card-text">Pallet Height(cm): {{ product.pallet_height }}</p>
+                        </div>
+                        <div class="tab-pane fade" id="customs-data" role="tabpanel" aria-labelledby="customs-data-tab">
+                            <!-- Customs Data -->
+                            <br>
+
+                            <h5 class="card-title">Customs Data</h5>
+                            <p class="card-text">HS Code: {{ product.hs_code }}</p>
+                            <p class="card-text">VAT: {{ product.vat }}</p>
+                        </div>
+                        <div class="tab-pane fade" id="stock-data" role="tabpanel" aria-labelledby="stock-data-tab">
+                            <!-- Stock Data -->
+                            <br>
+
+                            <h5 class="card-title">Stock Data</h5>
+                            <p class="card-text">Stock Location: {{ product.stock_location }}</p>
+                            <p class="card-text">Owned by: {{ product.tenant.company_name }}</p>
+                        </div>
+                        <div class="tab-pane fade" id="suppliers" role="tabpanel" aria-labelledby="suppliers-tab">
+                            <!-- Suppliers -->
+                            <br>
+
+                            <h5 class="card-title">Suppliers</h5>
+                            <ul class="list-group">
+                                {% for supplier in product.suppliers %}
+                                <li class="list-group-item">{{ supplier.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-4 image-fluid">
+                <img src="{{ img }}" alt="" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+<script>
+$(document).ready(function(){
+    $('.dropdown').hover(function() {
+        $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
+    }, function() {
+        $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105)
+    });
+});
+</script>

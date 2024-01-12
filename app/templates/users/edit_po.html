@@ -1,0 +1,293 @@
+<head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+</head>
+<style media="screen">
+
+    .invisible{
+      display:none;
+    }
+
+
+    #auto-saving-msg{
+      display:none;
+    }
+
+    #form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    #form-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    #form-table th,
+    #form-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      white-space: nowrap; /* Add this line */
+      overflow-wrap: break-word;
+
+    }
+
+    #form-table th {
+      font-weight: bold;
+      background-color: #4e73df;
+      color: #fff;
+    }
+
+    #form-table td input[type="text"],
+    #form-table td input[type="number"],
+    #form-table td select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .delete-btn {
+      background-color: #e74a3b;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    #subtotal,
+    #tax-rate,
+    #tax-amount,
+    #shipping-charges,
+    #total {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    #autoFillBtn,
+    #submitBtn {
+      background-color: #4e73df;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .product-image {
+        max-width: 20%;
+        max-height: 20%;
+        object-fit: contain;
+      }
+
+
+
+</style>
+
+{% extends "users/base.html" %}
+
+{% block css %}
+
+
+{% endblock %}
+
+{% block topbar %}
+
+    <h1 class="h3 mb-0 text-gray-800">Edit Purchase Order {{ po.po_number }}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+
+            {{ form.hidden_tag() }}
+
+            <!-- for hiding information -->
+            <div class="invisible">
+              <span id="poSender">{{ current_user.tenant_id }}</span>
+            </div>
+
+            <!-- supplier name -->
+            <form class="form" method="POST" enctype="multipart/form-data">
+
+              <input type="hidden" name="poUUID" id="poUUID" value={{ po.uuid }}>
+
+              {{ form.supplier.label }}*
+              {%if po.supplier %}
+                {{ form.supplier(class="form-control", value="Please select", id="supplierUUID", readonly="readonly") }}
+
+              {% else %}
+                <i class="fa-solid fa-bug fa-xl fa-bounce" style="color: #de4917;"></i>
+                {{ form.supplier(class="form-control animate__animated animate__pulse animate__infinite", value="Please select", id="supplierUUID") }}
+
+
+              {%endif%}
+
+
+              <!-- render matcheed results -->
+              <div id="match-list">
+
+              </div>
+
+            </form>
+
+
+
+            <!-- receiving warehouse -->
+            <form class="form" method="POST" enctype="multipart/form-data">
+
+              {{ form.warehouse.label }}*
+              {{ form.warehouse(class="form-control") }}
+
+            </form>
+
+
+            <!-- invoice form -->
+            <form>
+
+              <label for="poDate">Dated</label>
+              <input type="date" name="poDate" class="form-control bg-light" id="poDate" value="{{ po.timeCreated.strftime('%Y-%m-%d') }}" readonly>
+
+            </form>
+
+
+
+            <!-- PO form -->
+            <form>
+
+              <label for="internalReference">Reference</label>
+              <input type="text" name="internalReference" class="form-control bg-light" id="internalReference">
+
+            </form>
+
+          </div>
+
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <a href="#" class="btn btn-sm btn-primary" id="autoFillBtn">
+              <i class="fa-solid fa-pen"></i>
+              Auto fill
+            </a>
+
+            <button type="submit" class="btn btn-sm btn-primary" id="submitBtn">
+              <i class="fa-solid fa-floppy-disk"></i>
+              Save Changes
+            </button>
+
+
+            <a type="button" class="btn btn-sm btn-danger" href="{{ url_for('view_pos') }}">
+              <i class="fa-solid fa-xmark"></i>
+              Cancel
+            </a>
+
+
+
+          </div>
+
+
+
+
+
+
+            <table id="form-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Item</th>
+                        <th>Barcode</th>
+                        <th>Quantity</th>
+                        <th>Purchase Price {{ currency }}</th>
+                        <th>Tax Rate %</th>
+                        <th>Subtotal Amount {{ currency }}</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td><img src="{{ item.image }}" alt="" class="product-image"></td>
+                        <td>
+                          <span class="item-input">
+                            {{item.item_name}}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span class="barcode-input">
+                              {{ item.barcode }}
+                          </span>
+
+                        </td>
+                        <td><input type="number" name="items[{{ loop.index0 }}][quantity]" class="quantity-input" placeholder="Enter quantity" value="{{ item.quantity }}"></td>
+                        <td><input type="number" name="items[{{ loop.index0 }}][purchase_price]" class="purchase-price-input" placeholder="Enter purchase price" value="{{ item.purchase_price }}"></td>
+                        <td><input type="number" name="items[{{ loop.index0 }}][tax_rate]" class="tax-rate-input" placeholder="Enter tax rate" value="{{ item.tax_rate }}"></td>
+                        <td><input type="number" name="items[{{ loop.index0 }}][subtotal]" class="subtotal-amount-input" placeholder="Subtotal" readonly value="{{ item.subtotal }}"></td>
+                        <td>
+                            <button class="delete-btn">X</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+            <button id="addRowBtn" class="btn btn-sm btn-primary">Add Row</button>
+            <br>
+            <br>
+
+            <div>
+                <label for="subtotal">Subtotal {{ currency }}:</label>
+                <input type="number" id="subtotal" placeholder="Subtotal" readonly value="{{ po.subtotal }}">
+            </div>
+
+            <div>
+                <label for="tax-amount">Tax Amount {{ currency }}:</label>
+                <input type="number" id="tax-amount" placeholder="Tax Amount" readonly value="{{ po.tax_amount }}">
+            </div>
+
+            <div>
+                <label for="total">Total {{ currency }}:</label>
+                <input type="number" id="total" placeholder="Total" readonly value="{{ po.total }}">
+            </div>
+
+            <br>
+
+            <div>
+                <label for="supplierNotes">Supplier Notes:</label>
+                <textarea class="form-control" id="supplierNotes" rows="4" cols="50" placeholder="Write supplier notes here..." name="supplier_notes">{{ po.supplier_notes }}</textarea>
+            </div>
+
+            <div>
+                <label for="warehouseNotes">Warehouse Notes:</label>
+                <textarea class="form-control" id="warehouseNotes" rows="4" cols="50" placeholder="Write warehouse notes here..." name="warehouse_notes">{{ po.warehouse_notes }}</textarea>
+            </div>
+
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user_update_po.js') }}" charset="utf-8"></script>
+<!-- Include any additional scripts if needed -->
+<!-- Page level plugins -->
+<script src={{ url_for('static', filename="vendor/datatables/jquery.dataTables.min.js") }} charset="utf-8"></script>
+
+
+<script src={{ url_for('static', filename="vendor/datatables/dataTables.bootstrap4.min.js") }} charset="utf-8"></script>
+
+
+
+{% endblock %}

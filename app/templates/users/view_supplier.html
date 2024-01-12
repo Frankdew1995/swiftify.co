@@ -1,0 +1,96 @@
+{% extends "users/base.html" %}
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">Supplier Account</h1>
+
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <h5 class="card-header">Supplier Detail</h5>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-3">
+                <button class="btn btn-primary">
+                 <i class="fas fa-message"></i>
+                  Send a message
+                </button>
+                <button class="btn btn-primary">
+                  <i class="fa-regular fa-file-word"></i>
+                  Add Notes
+                </button>
+                <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">
+                      <i class="fa-solid fa-gears"></i>
+                        Actions
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li>
+
+                          <a class="dropdown-item" href="#">
+                            <i class="fa-solid fa-arrow-up-1-9"></i>
+                            Create a PO
+                          </a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item" href={{ url_for("edit_account", uuid=supplier.uuid, role="supplier") }}>
+                            <i class="fa-solid fa-pen-nib"></i>
+                            Edit Account
+                          </a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item danger" href="#">
+                            <i class="fa-solid fa-trash"></i>
+                            Delete
+                          </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <h5 class="card-title">{{ supplier.name }}</h5>
+            <p class="card-text">Contact Person: {{ supplier.contact_person }}</p>
+            <p class="card-text">Account Number: {{ supplier.account_number }}</p>
+            <p class="card-text">Email: {{ supplier.email }}</p>
+            <p class="card-text">Phone: {{ supplier.phone }}</p>
+            <p class="card-text">Street: {{ supplier.street_n_no }}</p>
+            <p class="card-text">City: {{ supplier.city }}</p>
+            <p class="card-text">Country: {{ supplier.country }}</p>
+            <p class="card-text">Warehouse Address: {{ supplier.warehouse_address }}</p>
+            <p class="card-text">Warehouse Start Hours: {{ supplier.warehouse_start_hours }}</p>
+            <p class="card-text">Warehouse End Hours: {{ supplier.warehouse_end_hours }}</p>
+            <h5 class="card-title mt-3">Inventory List</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock Quantity</th>
+                        <th>Stock Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inventory in inventories %}
+                    <tr>
+                        <td>{{ inventory.name }}</td>
+                        <td>{{ inventory.brand }}</td>
+                        <td>{{ inventory.category }}</td>
+                        <td>{{ inventory.price }}</td>
+                        <td>{{ inventory.stock_quantity }}</td>
+                        <td>{{ inventory.stock_location }}</td>
+                    </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6">No inventories available for this supplier.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "users/base.html" %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">{{ title }}</h3>
+        </div>
+        <div class="card-body">
+
+          <form method="POST" enctype="multipart/form-data">
+
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+              {{ form.warehouse_name.label }} {{ form.warehouse_name(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.warehouse_manager.label }} {{ form.warehouse_manager(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.email.label }} {{ form.email(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.address.label }} {{ form.address(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.city.label }} {{ form.city(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.state.label }} {{ form.state(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.zipcode.label }} {{ form.zipcode(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.country.label }} {{ form.country(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.operating_hours.label }} {{ form.operating_hours(class="form-control") }}
+            </div>
+
+        
+
+            <div class="form-group">
+              {{ form.notes.label }} {{ form.notes(class="form-control") }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Warehouse</button>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

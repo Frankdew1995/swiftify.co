@@ -1,0 +1,880 @@
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+
+
+{% extends "users/base.html" %}
+
+
+<!-- custom css for this page -->
+{% block css %}
+
+  <style media="screen">
+
+
+    #chat-form{
+      width: 100%;
+    }
+
+    .tax-group-2{
+      display:none;
+    }
+
+      .chat-container {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .chat-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .chat-message-tenant {
+    background-color: #d9d9d9;
+  }
+
+  .chat-message-supplier {
+    background-color: #f0f0f0;
+  }
+
+  .chat-message-header {
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  .chat-message-body {
+    margin-top: 5px;
+  }
+
+  .chat-form {
+    margin-top: 20px;
+  }
+
+
+  .message-btn {
+        margin-right: 10px;  /* Add space to the right of each button */
+    }
+
+
+    .mention-button {
+  position: relative;
+}
+
+
+.mention-item {
+    display: inline-block;
+    background-color: #f2f2f2;
+    padding: 2px 6px;
+    margin-right: 5px;
+    border-radius: 4px;
+}
+
+
+
+  </style>
+
+
+
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+
+
+
+{% endblock %}
+
+
+
+{% block topbar %}
+
+<h1 class="h3 mb-0 text-gray-800">Purchase Order {{ po.po_number }}</h1>
+
+
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+      <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm dropdown-toggle" data-toggle="dropdown">
+        <i class="fas fa-cogs"></i>
+        Tools
+      </a>
+      <div class="dropdown-menu">
+
+
+
+        <button type="button" class="dropdown-item" data-toggle="modal" data-target="#sendPoModal">
+            <i class="fa-regular fa-envelope-open"></i> Send PO
+        </button>
+
+        <!-- <a class="dropdown-item" href="#" id="view-">
+
+          Send PO
+        </a> -->
+
+
+        <a class="dropdown-item update-price-btn" href={{ url_for("export_po_csv", po_uuid=po.uuid) }} id="export-csv-{{ po.uuid }}">
+          <i class="fa-solid fa-download"></i>
+          Export PO as CSV
+        </a>
+
+        <a class="dropdown-item update-price-btn" href={{ url_for("edit_po", po_uuid=po.uuid) }} id="edit-">
+          <i class="fas fa-edit"></i>
+          Edit
+        </a>
+
+
+        <a class="dropdown-item" href="#" id="delete-">
+          <i class="far fa-trash-alt"></i>
+          Delete
+        </a>
+
+      </div>
+
+
+    </div>
+
+
+
+    <nav style="">
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-overview-tab" data-toggle="tab" href="#nav-overview" role="tab" aria-controls="nav-home" aria-selected="true">
+                <i class="fa-regular fa-rectangle-list"></i> Overview
+            </a>
+            <a class="nav-item nav-link" id="nav-messages-tab" data-toggle="tab" href="#nav-messages" role="tab" aria-controls="nav-messages" aria-selected="false">
+                <i class="fa-regular fa-comments"></i> Messages
+            </a>
+            <a class="nav-item nav-link" id="nav-activity-tab" data-toggle="tab" href="#activity-stream" role="tab" aria-controls="nav-activity-tab" aria-selected="false">
+                <i class="fa-solid fa-faucet-drip"></i> Activity stream
+            </a>
+            <a class="nav-item nav-link" id="nav-documents-tab" data-toggle="tab" href="#nav-documents" role="tab" aria-controls="nav-3rd-tab" aria-selected="false">
+                <i class="fa-solid fa-folder-open"></i> Documents
+            </a>
+            <a class="nav-item nav-link" id="nav-locations-tab" data-toggle="tab" href="#nav-locations" role="tab" aria-controls="nav-locations-tab" aria-selected="false">
+                <i class="fa-solid fa-warehouse"></i> Warehouses & Zones
+            </a>
+            <a class="nav-item nav-link" id="nav-changelog-tab" data-toggle="tab" href="#nav-changelog" role="tab" aria-controls="nav-changelog-tab" aria-selected="false">
+                <i class="fa-solid fa-history"></i> Change Log
+            </a>
+        </div>
+   </nav>
+
+
+
+    <div class="tab-content" id="nav-tabContent" style="">
+
+          <br>
+
+          <!-- first tab -->
+          <div class="tab-pane fade show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
+
+
+            <div class="card shadow mb-4">
+
+                <div class="card-body">
+
+                  <div class="table-responsive">
+
+
+                    <table style="width: 100%; border: 0; margin: 6px 0 0 0; padding: 0;">
+
+                      <tbody>
+
+                        <tr style="border: 0;">
+
+                          <td style="">
+
+                            <p>
+                              <span style="font-weight:bold;">Supplier: </span>{{ po.supplier.name }}
+                            </p>
+
+                            <p></p>
+                            <p></p>
+
+                            <p>
+                              <span style="font-weight:bold;">PO #: </span>{{ po.po_number }}
+                            </p>
+
+                            <p>
+
+                              <span>Dated: </span><span style="font-weight:bold;" id="po-issue-date">{{ po.timeCreated }}</span>
+
+                            </p>
+
+                          </td>
+
+                          <td style="width:10%">
+
+                          </td>
+
+
+                          <td>
+
+                            <p>
+                              <span style="font-weight:bold;">Bill to: </span>{{ tenant.company_name }}
+                            </p>
+
+                            <p>
+                              <span style="font-weight:bold;">Reference: </span>{{ po.reference if po.reference else ''}}
+                            </p>
+
+
+
+
+                            <p>
+                              <span style="font-weight:bold;">Receiving Warehouse: </span>{{ warehouse.warehouse_name }}
+                            </p>
+
+                          </td>
+
+                        </tr>
+
+
+                      </tbody>
+
+                    </table>
+
+                    <br>
+
+                    <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                        <thead>
+                          <tr role="row">
+                            <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                              Item
+                            </th>
+
+
+                            <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                              Barcode
+                            </th>
+
+
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                              Quantity
+                            </th>
+
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                              Unit Price {{ currency }}
+                            </th>
+
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                              Tax Rate
+                            </th>
+
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                              Amount  {{ currency }}
+                            </th>
+
+                          </tr>
+                        </thead>
+
+                      <tbody>
+
+                      {% for item in items %}
+
+                      <tr role="row" class="odd info-row">
+                          <td class="itemDescription sorting_1">
+
+                            {{ item.get("item_name") }}
+
+                          </td>
+
+
+                          <td class="gtinInput">
+                            {{ item.get("barcode") }}
+                          </td>
+
+
+                          <td class="qtyInput">
+                            {{ item.get("quantity", 0) }}
+                          </td>
+
+
+                          <td class="priceInput">
+                            {{ item.get("purchase_price", 0) }}
+                          </td>
+
+                          <td class="taxSelection">
+
+                            {{item.get("tax_rate", 0)}}
+
+                          </td>
+
+                          <td class="amount">
+
+                            {{item.get("subtotal", 0)}}
+
+                          </td>
+
+                        </tr>
+                        {% endfor %}
+
+                        <tr id="divisionTableRow" style="display:none"></tr>
+
+                      </tbody>
+                    </table>
+
+
+                    <!-- table to display the mathematical data -->
+                    <table style="width:100%">
+
+                      <tbody>
+
+                        <tr>
+
+                          <td></td>
+
+                          <td style="text-align:right;">
+
+                              <p style="">
+                                <span style="font-weight:bold">Subtotal {{ currency }}: </span> {{ po.subtotal }}
+                              </p>
+
+                              <p>
+                                <span style="font-weight:bold">Tax {{ currency }}: </span> {{ po.tax_amount }}
+                              </p>
+
+
+                              <p style="font-size:20px;">
+                                <span style="font-weight:bold">Grand Total {{ currency }}: </span> {{ po.total }}
+                              </p>
+
+
+                          </td>
+
+                        </tr>
+
+
+                      </tbody>
+
+                    </table>
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+
+      <!-- the second tab for messages -->
+      <div class="tab-pane fade" id="nav-messages" role="tabpanel" aria-labelledby="nav-messages-tab">
+
+
+          <!-- Form to send a new message use mailgun API here -->
+          <form action="/post/activity" method="POST" id="chat-form">
+            <input type="hidden" name="supplier_email" value="{{ supplier.email }}">
+            <input type="hidden" name="warehouse_email" value="{{ warehouse.email }}">
+            <input type="hidden" name="warehouse_id" value={{ warehouse.id }}>
+            <input type="hidden" name="po_id" value={{ po.id }}>
+
+            <input type="hidden" name="po_uuid" value={{ po.uuid }}>
+
+            <input type="hidden" name="po_number" value={{ po.po_number }}>
+
+
+
+            <!-- activity type -->
+            <input type="hidden" name="activity-type" value="message">
+            <div class="form-group">
+              <label for="messageInput">New Message</label>
+              <textarea class="form-control" id="messageInput" name="message" rows="3"></textarea>
+            </div>
+            <!-- button groups -->
+
+            <!-- send button -->
+            <div class="btn-toolbar" role="toolbar">
+                <button type="submit" class="btn btn-primary mr-2">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+
+                <button type="button" class="btn btn-secondary mr-2" data-toggle="modal" data-target="#fileModal">
+                    <i class="fas fa-file-alt"></i>
+                </button>
+
+                <!-- Button to mention people -->
+                <button type="button" class="btn btn-info" id="mentionBtn">
+                  <i class="fas fa-at"></i>
+                </button>
+            </div>
+            <br>
+            <!-- where a specific party being mentioned -->
+            <input type="text" class="form-control form-sm" name ="mentionInput" id="mentionInput" placeholder="Type to mention" style="display: none;">
+
+
+          </form>
+
+          <!-- modal for file uploading -->
+          <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                      <!-- Modal content -->
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+
+                        <form class="form" method="POST" enctype="multipart/form-data" id="fileForm">
+                          <!-- File upload form -->
+                            {{ form.hidden_tag() }}
+                            <div class="form-label-group">
+                              {{ form.file() }}
+                            </div>
+
+                            <br>
+                            <div class="form-label-group">
+
+                                {{ form.submit(class="btn btn-primary") }}
+
+                            </div>
+
+                        </form>
+
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <br>
+
+          <!-- assign the div to an id where messages are displayed.  -->
+          <div id="messages-list">
+
+            <!-- Messages code -->
+            {% for activity in activities %}
+
+              {% if activity.type == 'message' %}
+              <div class="chat-message {% if activity.sender ==  current_user %}chat-message-tenant{% else %}chat-message-supplier{% endif %}">
+                  <div class="chat-message-header">
+                    <a href="mailto:{{activity.sender.email}}">
+                      <span class="chat-message-sender">{{ activity.sender.user_name }}</span>
+                    </a>
+                    @ {{ activity.sender.tenant.company_name }} @
+                    <span class="chat-message-time">{{ activity.timestamp }}</span> said:
+                  </div>
+                  <div class="chat-message-body">
+                    <em>{{ activity.text }}</em>
+                  </div>
+              </div>
+              <br>
+              {% endif %}
+
+            {% endfor %}
+
+          </div>
+
+      </div>
+
+
+
+          <!-- third tab -->
+      <div class="tab-pane fade show" id="activity-stream" role="tabpanel" aria-labelledby="nav-activity-tab">
+
+
+        <!-- Activity stream code -->
+          {% for activity in activities %}
+            {% if activity.type == 'event' or activity.type == 'log' %}
+              <!-- Display the activity -->
+            {% endif %}
+          {% endfor %}
+
+
+      </div>
+
+
+        <!-- third tab - Documents -->
+        <div class="tab-pane fade" id="nav-documents" role="tabpanel" aria-labelledby="nav-documents-tab">
+          <div class="card shadow mb-4">
+            <div class="card-body">
+              <h4>Attached Documents</h4>
+              <!-- Here you can add a list or grid of documents associated with the purchase order -->
+
+            </div>
+          </div>
+        </div>
+
+
+      <!-- fourth tab - Warehouses & Locations -->
+      <div class="tab-pane fade" id="nav-locations" role="tabpanel" aria-labelledby="nav-locations-tab">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+              <h4>Warehouse & Zone Details</h4>
+
+
+              {% if warehouse %}
+
+                  <p><strong>Warehouse Name: </strong>{{ warehouse.warehouse_name }}</p>
+                  <p><strong>Warehouse Address: </strong>{{ warehouse.address }}</p>
+                  {% for zone in warehouse.zones %}
+                  <p><strong>Zone {{ loop.index }}: </strong>{{ zone.name }}</p>
+                  {% endfor %}
+
+                {% else %}
+                  <p>This PO is either a drop-shipped order or it has no receiving warehouse associated. </p>
+                  <br>
+                  <button type="submit" class="btn btn-primary" id="add-warehouse">Add a warehouse</button>
+
+              {% endif %}
+            </div>
+        </div>
+      </div>
+
+      <!-- the fifth tab for PO change log -->
+      <div class="tab-pane fade" id="nav-changelog" role="tabpanel" aria-labelledby="nav-changelog-tab">
+
+        {% if change_logs %}
+
+            <div class="table-responsive">
+              <table class="table">
+                  <thead>
+                      <tr>
+                          <th>@ Time</th>
+                          <th>Old</th>
+                          <th>Current</th>
+                          <th>Modified</th>
+
+                          <th>Made By</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for log in change_logs %}
+                      <tr>
+                          <td class="timestamp">{{ log.timestamp }}</td>
+                          <td>
+                              {% for item in log.previous_items %}
+                                  <p>{{ item.item_name }}:{{ item.quantity }}</p>
+                              {% endfor %}
+                          </td>
+                          <td>
+                              {% for item in log.current_items %}
+                                  <p>{{ item.item_name }}:{{ item.quantity }}</p>
+                              {% endfor %}
+                          </td>
+                          <td>{{ "Yes" if log.is_modified else "No" }}</td>
+                          <td>{{ log.modified_by }}</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+
+
+
+              {%else%}
+
+                No changes for this PO have been tracked.
+
+              {%endif%}
+          </div>
+
+
+
+
+
+    </div>
+
+    <br>
+
+  </div>
+
+  <br>
+
+
+<!-- Send PO Modal -->
+<div class="modal fade" id="sendPoModal" tabindex="-1" role="dialog" aria-labelledby="sendPoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sendPoModalLabel">Send Purchase Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="sendPoForm">
+          <!-- Subject line -->
+          <div class="form-group">
+            <label for="subjectLine">Subject</label>
+            <input type="text" class="form-control" id="subjectLine" name="subjectLine" value="PO Requisition {{ po.po_number }} # from {{ po.tenant.company_name }}" required>
+          </div>
+          <!-- Sender email -->
+          <div class="form-group">
+            <label for="senderEmail">Sender Email</label>
+            <input type="email" class="form-control" id="senderEmail" name="senderEmail" value="{{ current_user.email }}" required>
+          </div>
+          <!-- Recipient -->
+          <div class="form-group">
+            <label for="recipient">Recipient</label>
+            <input type="email" class="form-control" id="recipient" name="recipient" value="{{ supplier.email or ''}}" required>
+          </div>
+          <!-- CC -->
+          <div class="form-group">
+            <label for="ccInput">CC</label>
+            <select class="form-control" id="ccInput" name="cc[]" multiple>
+              {% for user in tenant.users %}
+                <option value="{{ user.email }}">{{ user.user_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Email content -->
+          <div class="form-group">
+            <label for="emailContent">Email Content</label>
+            <textarea class="form-control" id="emailContent" name="emailContent" rows="5" required>
+              Hello
+            </textarea>
+          </div>
+          <!-- File input -->
+          <div class="form-group">
+            <label for="poFile">PO File</label>
+            <input type="file" class="form-control-file" id="poFile" name="poFile" accept=".pdf" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  {% block scripts %}
+
+  <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+  <!-- moment JS handle the local time -->
+  <script>
+      window.onload = function() {
+          let timestamps = document.getElementsByClassName('timestamp');
+          for(let i = 0; i < timestamps.length; i++){
+              let utcTime = timestamps[i].innerText;
+              let localTime = moment.utc(utcTime).local().format('LLL');
+              timestamps[i].innerText = localTime;
+          };
+
+          // Handle Po issue date from UTC to user's local browser
+          let poIssueDate = document.getElementById('po-issue-date');
+          let utcTime = poIssueDate.textContent;
+          let localTime = moment.utc(utcTime).local().format('L');
+          poIssueDate.textContent = localTime;
+
+          // localize times for user messages
+          let chatTimestamps = document.getElementsByClassName('chat-message-time');
+          for(let i = 0; i < chatTimestamps.length; i++){
+              let utcTime = chatTimestamps[i].textContent;
+              let localTime = moment.utc(utcTime).local().format('LLL');
+              chatTimestamps[i].textContent = localTime;
+          };
+
+
+      }
+  </script>
+
+
+  <!-- jquery autocomplete -->
+  <script type="text/javascript">
+    $(document).ready(function() {
+        var mentionInput = $('#mentionInput');
+        var mentionBtn = $('#mentionBtn');
+        var inputValue = '';
+
+        var sourceData = {{ source_data|tojson }};
+
+        mentionInput.autocomplete({
+            source: sourceData,
+            select: function(event, ui) {
+                event.preventDefault();
+                mentionInput.val(ui.item.value);
+                inputValue = ui.item.value;
+            }
+        });
+
+        mentionBtn.on('click', function() {
+            if (mentionInput.css('display') === 'none') {
+                mentionInput.val(inputValue);
+                mentionInput.show();
+            } else {
+                inputValue = '';
+                mentionInput.val('');
+                mentionInput.hide();
+            }
+        });
+    });
+</script>
+
+
+
+  <script>
+
+
+    // configure pusher
+
+    const pusher = new Pusher('2da9c9700dd0922bfaa1', {
+      cluster: 'eu', // gotten from Pusher app dashboard
+    });
+
+
+    var channel = pusher.subscribe('activity-feed');
+    channel.bind('activity-posted', data => {
+      appendToList(data);
+
+      // Convert data to JSON and send POST request to messenger in server
+      fetch("/api/messenger", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(json => {
+        // Handle response data here
+        console.log(json);
+      })
+      .catch(e => {
+        // Handle errors here
+        console.log('There was an error:', e);
+      });
+    });
+
+
+
+    const form = document.querySelector('#chat-form');
+
+    console.log(form);
+
+    // makes POST request to store messages on form submit
+    form.onsubmit = e => {
+      e.preventDefault();
+      fetch("/post/activity", {
+        method: 'POST',
+        body: new FormData(form)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(json => {
+        form.reset();
+      })
+      .catch(e => {
+        // Handle errors here
+        console.log('There was an error:', e);
+        if (e.message.includes("404")) {
+          alert("An error occurred while sending your message. Please retry.");
+        }
+      });
+    };
+
+
+    // appends new posts to the list of blog posts on the page
+    function appendToList(data) {
+  let list = document.querySelector("#messages-list");
+
+  // Create new message div
+  let messageDiv = document.createElement('div');
+  messageDiv.className = "chat-message";
+
+  // Create header
+  let header = document.createElement('div');
+  header.className = "chat-message-header";
+
+  // Add sender link to header
+  let senderLink = document.createElement('a');
+  senderLink.href = `mailto:${data.senderEmail}`;
+  senderLink.textContent = data.senderName+ " ";
+  header.appendChild(senderLink);
+
+
+  // Add tenant company
+  let tenantSpan = document.createElement('span');
+  tenantSpan.className = "chat-message-tenant";
+  tenantSpan.textContent = "@ "+data.tenant + " " + "said @ ";
+  header.appendChild(tenantSpan);
+
+
+  // Add time to header
+  let timeSpan = document.createElement('span');
+  timeSpan.className = "chat-message-time";
+  timeSpan.textContent = data.timestamp;
+
+  // Handle chat message time from UTC to user's local browser
+  let utcTime = timeSpan.textContent;
+  let localTime = moment.utc(utcTime).local().format('LLL');
+  timeSpan.textContent = localTime;
+
+
+  header.appendChild(timeSpan);
+
+
+  // Add header to message div
+  messageDiv.appendChild(header);
+
+  // Create body
+  let body = document.createElement('div');
+  body.className = "chat-message-body";
+  body.textContent = data.text;
+
+  // Add body to message div
+  messageDiv.appendChild(body);
+
+  // Append new message div to the list
+  list.prepend(messageDiv);
+};
+
+
+
+  </script>
+
+
+
+  {% endblock %}
+
+
+{% endblock %}

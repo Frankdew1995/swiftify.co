@@ -1,0 +1,72 @@
+{% extends "users/base.html" %}
+
+
+{% block topbar %}
+
+<h1 class="h3 mb-0 text-gray-800">Change Log for Purchase Order: {{ po.po_number }}</h1>
+
+
+
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+            {% if change_logs %}
+
+            <div class="table-responsive">
+
+              <table class="table">
+                  <thead>
+                      <tr>
+                          <th>@ Time</th>
+                          <th>Old</th>
+                          <th>Current</th>
+                          <th>Modified</th>
+                          <th>Made By</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for log in change_logs %}
+                          <tr>
+                              <td class="timestamp">{{ log.timestamp }}</td>
+                              <td>
+                                  {% for item in log.previous_items %}
+                                      <p>{{ item.item_name }}:{{ item.quantity }}</p>
+                                  {% endfor %}
+                              </td>
+                              <td>
+                                  {% for item in log.current_items %}
+                                      <p>{{ item.item_name }}:{{ item.quantity }}</p>
+                                  {% endfor %}
+                              </td>
+                              <td>{{ "Yes" if log.is_modified else "No" }}</td>
+                              <td>{{ log.modified_by }}</td>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+
+            </div>
+
+            {% else %}
+                <p>No changes for this PO have been tracked.</p>
+            {% endif %}
+        </div>
+
+{% endblock %}
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script>
+    window.onload = function() {
+        let timestamps = document.getElementsByClassName('timestamp');
+        for (let i = 0; i < timestamps.length; i++) {
+            let utcTime = timestamps[i].textContent;
+            let localTime = moment.utc(utcTime).local().format('LLL');
+            timestamps[i].textContent = localTime;
+        }
+    }
+</script>

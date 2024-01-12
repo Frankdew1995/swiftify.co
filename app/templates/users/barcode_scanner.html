@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.2.5/dist/dbr.js"></script>
+  <script>
+        // initializes and uses the library
+        let scanner = null;
+        (async () => {
+            scanner = await Dynamsoft.DBR.BarcodeScanner.createInstance();
+            scanner.onFrameRead = results => {
+                if (results.length > 0) console.log(results);
+            };
+            scanner.onUnduplicatedRead = (txt, result) => {
+                alert(txt);
+            };
+            await scanner.show();
+        })();
+    </script>
+</body>
+
+</html>

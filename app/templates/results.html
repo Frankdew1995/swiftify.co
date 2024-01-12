@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+
+{% block css %}
+
+<link rel="stylesheet" href={{ url_for('static', filename="wishlist/css/style.css") }}>
+
+
+<style media="screen">
+
+  #disclaimer{
+    font-style: italic;
+  }
+
+  #priceTotal{
+    display: none;
+  }
+
+
+
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<!-- Navigation -->
+<nav class="navbar navbar-light bg-light static-top">
+
+  <div class="container">
+
+    <!-- Search bar in nav bar -->
+    <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
+      <form method="POST">
+        <div class="form-row">
+          <div class="col-12 col-md-9 mb-2 mb-md-0">
+            <input type="text" class="form-control form-control-lg" value={{ query }} name="search" placeholder="Search EAN, barcode, brand name or a product">
+          </div>
+          <div class="col-12 col-md-3">
+            <button type="submit" class="btn btn-block btn-lg btn-primary">Search</button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- end of search bar -->
+    <a class="btn btn-primary" href={{ url_for('export_data', query=query) }} id="export">
+      <i class="fas fa-download"></i>
+      Export Data
+    </a>
+
+
+  </div>
+</nav>
+
+<!-- Icons Grid -->
+<section class="features-icons bg-light text-center">
+
+  <p>Search results: {{ num_results }}</p>
+  <div class="container">
+    <div class="row">
+
+      <!-- start of search results -->
+      {% for product in products %}
+
+      <div class="col-lg-4">
+        <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+
+          <!-- start of card -->
+          <div class="card" style="width: 18rem;" id={{ product.id }}>
+            <img src={{ product.img }} alt="" style="display:none">
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p>Barcode: {{ product.gtin }}</p>
+              <a href="#0" class="cd-add-to-cart js-cd-add-to-cart btn btn-primary" data-price={{product.price}} id={{product.id}}>
+                Add
+              </a>
+              <a href="#" class="btn btn-info" data-toggle="modal" data-target="#productModal{{product.id}}">
+                View More
+              </a>
+            </div>
+          </div>
+          <!-- end of the card -->
+
+          <!-- start of the product modal -->
+          <div class="modal fade" id="productModal{{product.id}}" tabindex="-1" role="dialog" aria-labelledby="productModal{{product.id}}ScrollableTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="productModal{{product.id}}ScrollableTitle">{{ product.name }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  {% if product.category %}
+                  <p>Category: {{ product.category }}</p>
+                  {% endif %}
+
+                  {% if product.item_code %}
+                  <p>Item Code by Manufacturer: {{ product.item_code }}</p>
+                  {% endif %}
+
+                  {% if product.hs_code %}
+                  <p>
+                    HS Code: {{ product.hs_code }}
+                    what's
+                    <a href="https://www.zoll.de/EN/Businesses/Movement-of-goods/Import/Duties-and-taxes/Normal-customs-clearance/Customs-Tariff/customs-tariff_node.html" target="blank">
+                      this
+                    </a>?
+                  </p>
+                  {% endif %}
+
+                  <p>Barcode: {{ product.gtin }}</p>
+
+                  {% if product.vat %}
+                  <p>VAT: {{ product.vat*100 }}%</p>
+                  {% endif %}
+
+                  {% if product.price %}
+                  <p>Net Price EXW: {{ product.price }} EUR</p>
+                  {% endif %}
+
+                  {% if product.is_available %}
+
+                  <p>Stock available: Yes</p>
+                  {% else %}
+                  <p>Stock available: No</p>
+                  {% endif %}
+
+                  <p id="disclaimer">
+                    Price Disclaimer: wholesales price of FMCG products is often volatile.
+                    Use the price mentioned only as a reference.
+                    Please always request live quotes from vendors.
+                  </p>
+
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                  {% if product.img %}
+                  <a href={{ url_for('view_image', product_id=product.id) }} class="btn btn-info" target="_blank">
+                    View Image
+                  </a>
+                  {% endif %}
+
+                  {% if product.amazon_url %}
+                  <a href={{ product.amazon_url }} class="btn btn-dark" target="_blank">
+                    View In Amazon.de
+                  </a>
+                  {% endif %}
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end of product modal -->
+
+        </div>
+
+      </div>
+
+      {% endfor %}
+
+      <div class="cd-cart cd-cart--empty js-cd-cart">
+        	<a href="#0" class="cd-cart__trigger text-replace">
+        		Cart
+        		<ul class="cd-cart__count"> <!-- cart items count -->
+        			<li>0</li>
+        			<li>0</li>
+        		</ul> <!-- .cd-cart__count -->
+        	</a>
+
+        	<div class="cd-cart__content">
+        		<div class="cd-cart__layout">
+        			<header class="cd-cart__header">
+        				<h2>Wishlist</h2>
+        				<span class="cd-cart__undo">Item removed. <a href="#0">Undo</a></span>
+        			</header>
+
+        			<div class="cd-cart__body">
+        				<ul>
+        					<!-- products added to the cart will be inserted here using JavaScript -->
+        				</ul>
+        			</div>
+
+        			<footer class="cd-cart__footer">
+                  <a href="#0" class="cd-cart__checkout" id="checkout" data-toggle="modal" data-target="#emailConfirm">
+                    <em>Request a quote now <span id="priceTotal">0</span>
+                      <svg class="icon icon--sm" viewBox="0 0 24 24"><g fill="none" stroke="currentColor"><line stroke-width="2" stroke-linecap="round" stroke-linejoin="round" x1="3" y1="12" x2="21" y2="12"/><polyline stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="15,6 21,12 15,18 "/></g>
+                      </svg>
+                    </em>
+                  </a>
+
+        			</footer>
+        		</div>
+        	</div> <!-- .cd-cart__content -->
+        </div>
+
+        <!-- Modal for request email confirm -->
+        <div class="modal fade" id="emailConfirm" tabindex="-1" role="dialog" aria-labelledby="emailConfirmLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Thanks for your request! Almost there..</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+
+                <p>
+                  Please leave your email address so that you can keep up-to-date with your quote when a vendor updates it.
+                </p>
+
+                <form>
+
+                  <div class="form-group">
+                    <input type="email" class="form-control" id="RequesterEmail" aria-describedby="emailHelp" placeholder="Enter email" required value={{ current_user.email }}>
+                    <small id="emailHelp" class="form-text text-muted">We'll not spam you.</small>
+                  </div>
+
+                </form>
+
+              </div>
+              <div class="modal-footer">
+                <!-- submit button modal data target set to processSpinner -->
+                <button type="button" class="btn btn-primary" id="requestConfirm">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- end of search results -->
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script src={{ url_for('static', filename="wishlist/js/util.js") }}></script>
+<script src={{ url_for('static', filename="wishlist/js/main.js") }}></script>
+<script src={{ url_for('static', filename="wishlist/js/wishlist.js") }}></script>
+<script src={{ url_for('static', filename="js/hide_export_mobile.js") }}></script>
+
+<script type="text/javascript">
+
+  const checkBtn = document.getElementById('checkout');
+  checkBtn.addEventListener("click", function(){
+
+    // open the email input dialog
+    $("#emailConfirm").dialog("open");
+  })
+
+
+</script>
+
+
+
+{% endblock %}

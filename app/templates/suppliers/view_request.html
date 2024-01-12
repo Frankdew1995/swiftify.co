@@ -1,0 +1,246 @@
+{% extends "vendors/base.html" %}
+
+
+{% block css %}
+
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+<style media="screen">
+
+    .invisible{
+      display:none;
+    }
+
+</style>
+
+
+{% endblock %}
+
+
+{% block topbar %}
+
+<a href={{ referrer }}>
+  <button class="btn btn-primary" type="button">
+    <i class="fas fa-backspace"></i>
+    Cancel
+  </button>
+</a>
+
+
+
+
+{% endblock %}
+
+
+
+{% block content %}
+<div class="container-fluid">
+
+
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+          <!-- for hiding information -->
+          <div class="invisible">
+            <span id="reqId" class=>{{ req_id }}</span>
+            <span id="vendor">{{ current_user.email }}</span>
+          </div>
+
+
+          <form>
+
+            <label for="Expiry">Expires</label>
+            <input type="date" name="Expiry" class="form-control bg-light" id="Expiry">
+
+          </form>
+
+          <form>
+
+            <label for="leadTime">
+              Lead Time(Working Days)
+            </label>
+            <input type="number" name="leadTime" class="form-control bg-light" id="leadTime">
+
+          </form>
+
+
+
+        </div>
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i>
+            Export
+          </a>
+
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm update-quote-btn" id="save" data-toggle="modal" data-target="#vendorSaveAlert">
+            <i class="fas fa-save"></i>
+            Save
+          </a>
+
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm update-quote-btn" id="send" data-toggle="modal" data-target="#vendorSaveAlert">
+            <i class="fas fa-paper-plane"></i>
+            Send
+          </a>
+
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-envelope-square"></i>
+            Email
+          </a>
+        </div>
+
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+
+                <div class="row">
+                  <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+
+                    <thead>
+                      <tr role="row">
+                        <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 60px;">
+                          Item ID
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Name
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          Brand
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 73px;">
+                          EAN / GTIN
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Quantity
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">
+                          Unit
+                        </th>
+
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">
+                          <i class="fas fa-euro-sign"></i>
+                          Price
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">
+                          Available - piece(s)
+                        </th>
+
+                      </tr>
+                    </thead>
+
+                  <tbody>
+
+                  {% for item in requested_items %}
+                  <tr role="row" class="odd info-row">
+                      <td class="sorting_1">{{ item.get('itemId') }}</td>
+                      <td>{{ item.get('itemName') }}</td>
+                      <td>{{ item.get('Brand') }}</td>
+                      <td>
+                        {{ item.get('EAN / GTIN') }}
+                      </td>
+
+                      <td>
+                        {{ item.get('itemQty') }}
+                      </td>
+
+                      <td>
+                        {{ item.get('itemUnit') }}
+                      </td>
+
+
+                      <td>
+                        <input type="number" class="form-control bg-light price" placeholder="">
+                      </td>
+
+                      <td>
+                        <input type="number" class="form-control bg-light" placeholder="">
+                      </td>
+                    </tr>
+                    {% endfor %}
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Vendor Save Alert -->
+          <!-- Modal -->
+          <div class="modal fade" id="vendorSaveAlert" tabindex="-1" role="dialog" aria-labelledby="vendorSaveAlertLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="vendorSaveAlertLabel">Quote saved in draft!</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  <p id="alertContent">
+                    Great! You've saved this quote in draft mode
+                    so that the buyer knows that you're going to rework on this soon.
+                  </p>
+
+                </div>
+                <div class="modal-footer">
+
+                  <a href={{ url_for('vendor_drafted_quotes') }} class="btn btn-primary" id="viewQuote">
+                    View
+                  </a>
+
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                  </button>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end of vendor save quote alert -->
+
+
+
+
+</div>
+<!--  end of contaner fluid-->
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+
+<!-- Page level plugins -->
+<script src={{ url_for('static', filename="vendor/datatables/jquery.dataTables.min.js") }} charset="utf-8"></script>
+
+
+<script src={{ url_for('static', filename="vendor/datatables/dataTables.bootstrap4.min.js") }} charset="utf-8"></script>
+
+
+<!-- Page level custom scripts  activate the datatable functionality -->
+<script src={{ url_for('static', filename="js/demo/datatables-demo.js") }}></script>
+<script src={{ url_for('static', filename="js/vendor_update_request.js") }}></script>
+
+
+
+
+{% endblock %}

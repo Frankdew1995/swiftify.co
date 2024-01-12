@@ -1,0 +1,273 @@
+{% extends "users/base.html" %}
+
+
+<!-- custom css for this page -->
+{% block css %}
+
+  <style media="screen">
+
+
+    #settingsForm{
+      width: 50%;
+    }
+
+
+  </style>
+
+
+{% endblock %}
+
+
+
+{% block topbar %}
+
+
+<h1 class="h3 mb-0 text-gray-800">{{ title }}</h1>
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+      <!-- render flashing messages -->
+      {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+      {% endwith %}
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+
+
+    <form class="form" method="POST" enctype="multipart/form-data" id="settingsForm">
+
+      {{ form.hidden_tag() }}
+
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-basic" role="tab" aria-controls="nav-home" aria-selected="true">
+            Company Information
+          </a>
+
+          <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-financial-tax" role="tab" aria-controls="nav-profile" aria-selected="false">
+            Tax & Billings
+          </a>
+
+
+          <a class="nav-item nav-link" id="nav-logistics" data-toggle="tab" href="#nav-warehouse-logistics" role="tab" aria-controls="nav-profile" aria-selected="false">
+            Warehouse & Logistics
+          </a>
+
+        </div>
+    </nav>
+
+
+    <div class="tab-content" id="nav-tabContent">
+
+          <div class="tab-pane fade show active" id="nav-basic" role="tabpanel" aria-labelledby="nav-home-tab">
+            <br>
+            <div class="form-label-group">
+              {{ form.name.label }}
+              {{ form.name(class="form-control", placeholder=role + " company name" ) }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.contact_person.label }}
+              {{ form.contact_person(class="form-control", placeholder=role + " contact person" ) }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.email.label }}
+              {{ form.email(class="form-control", placeholder="Enter " + role + " email") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.phone.label }}
+              {{ form.phone(class="form-control", placeholder="Enter " + role + " phone no") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.street_n_no.label }}
+              {{ form.street_n_no(class="form-control", placeholder="Enter " + role +" address") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.city.label }}
+              {{ form.city(class="form-control", placeholder="Enter " + role +" city") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.state_or_province.label }}
+              {{ form.state_or_province(class="form-control", placeholder=role + " city") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.zip_code.label }}
+              {{ form.zip_code(class="form-control", placeholder=role + " zip code") }}
+            </div>
+
+            <div class="form-label-group">
+              {{ form.country.label }}
+              {{ form.country(class="form-control") }}
+            </div>
+
+            <hr>
+
+
+
+          </div>
+
+          <div class="tab-pane fade" id="nav-financial-tax" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <br>
+            <!-- some ternary operators in this helper text -->
+            <p>
+              The following fields are optional and will appear on the
+              {{"invoices" if role == "customer" else "Purchase Orders"}}
+              you issued to your {{role}}s.
+
+              You will be able to adjust this later when creating a
+              {{"invoice" if role == "customer" else "Purchase Order"}}
+            </p>
+
+            <div class="form-label-group">
+              {{ form.vat_id.label }}
+              {{ form.vat_id(class="form-control", placeholder="") }}
+            </div>
+
+            <br>
+
+            <h6>Tax Settings</h6>
+            <br>
+
+            <div class="tax-group-1">
+
+
+              <div class="form-label-group">
+
+                {{ form.tax_rate_1.label }}
+                {{ form.tax_rate_1(class="form-control", placeholder="") }}
+
+              </div>
+
+
+            </div>
+
+
+            <div class="tax-group-2" id="tax-group-2">
+
+
+              <div class="form-label-group">
+                {{ form.tax_rate_2.label }}
+                {{ form.tax_rate_2(class="form-control", placeholder="") }}
+              </div>
+
+            </div>
+
+            <br>
+
+          </div>
+
+
+
+          <!-- logistics and warehouse fields -->
+          <div class="tab-pane fade" id="nav-warehouse-logistics" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+            <!-- some ternary operators in this helper text -->
+            <br>
+            <div class="form-label-group">
+              <em>{{ form.warehouse_address.label }}</em>
+              <br>
+              {{ form.same_as_company_address() }}
+              {{ form.same_as_company_address.label }}
+              {{ form.warehouse_address(class="form-control", placeholder="Please enter a different address as the collection address for this supplier", hidden=hidden) }}
+            </div>
+
+            <br>
+
+
+            <em><h6>Opening Hours</h6></em>
+            <br>
+
+            <div class="tax-group-1">
+
+
+              <div class="form-label-group">
+
+                {{ form.warehouse_start_hours.label }}
+                {{ form.warehouse_start_hours(class="form-control", placeholder="Please enter a time, e.g. 12:00, 13:00") }}
+
+              </div>
+              <br>
+
+              <div class="form-label-group">
+
+                {{ form.warehouse_end_hours.label }}
+                {{ form.warehouse_end_hours(class="form-control", placeholder="Please enter a time, e.g. 22:00, 19:00") }}
+
+              </div>
+
+
+            </div>
+
+
+
+
+          </div>
+
+    </div>
+
+
+    <br>
+
+    {{ form.update(class="btn btn-primary") }}
+
+
+    </form>
+
+
+
+
+  </div>
+
+  <br>
+
+
+
+
+
+
+  {% block scripts %}
+
+
+  <script>
+    var sameAsCompanyAddressCheckbox = document.getElementById("same_as_company_address");
+    var warehouseAddressInput = document.getElementById("warehouse_address");
+
+    sameAsCompanyAddressCheckbox.addEventListener("change", function() {
+      warehouseAddressInput.hidden = this.checked;
+    });
+  </script>
+
+  <script src={{ url_for('static', filename="js/company_settings.js") }}></script>
+
+
+
+  {% endblock %}
+
+
+{% endblock %}
